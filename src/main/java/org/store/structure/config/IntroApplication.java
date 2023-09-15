@@ -21,8 +21,8 @@ public class IntroApplication {
     public CommandLineRunner commandLineRunner() {
         return args -> {
             Book book = new Book();
-            book.setAuthor("Vyacheslav");
-            book.setDescription("kurwa mat");
+            book.setAuthor("test");
+            book.setDescription("testDesc");
             bookService.save(book);
         };
     }
