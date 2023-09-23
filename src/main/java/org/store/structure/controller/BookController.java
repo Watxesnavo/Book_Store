@@ -1,5 +1,6 @@
 package org.store.structure.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +29,7 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+    public BookDto createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
     }
 
