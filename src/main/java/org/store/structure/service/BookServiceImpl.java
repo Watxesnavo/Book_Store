@@ -2,6 +2,7 @@ package org.store.structure.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.store.structure.dto.BookDto;
 import org.store.structure.dto.BookSearchParametersDto;
@@ -32,8 +33,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> findAll() {
-        return repository.findAll()
+    public List<BookDto> findAll(Pageable pageable) {
+        return repository.findAll(pageable)
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
