@@ -6,5 +6,4 @@ import org.store.structure.dto.BookDto;
 import org.store.structure.model.Book;
 
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-    BookDto updateBookById(Long id, Book newBook);
 }

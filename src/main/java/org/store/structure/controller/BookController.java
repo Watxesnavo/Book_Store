@@ -1,9 +1,10 @@
 package org.store.structure.controller;
 
-import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +26,7 @@ import org.store.structure.service.BookService;
 @RestController
 @RequestMapping(value = "/api/books")
 @RequiredArgsConstructor
+@Slf4j
 public class BookController {
     private final BookService bookService;
 
@@ -61,9 +63,9 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "search a book with parameters", description = "criteria search for a book")
+    @Operation(summary = "search a book with parameters",
+            description = "criteria search for a book")
     public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
         return bookService.searchBooks(searchParameters);
     }
-
 }

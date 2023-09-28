@@ -1,9 +1,12 @@
 package org.store.structure.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.BookDto;
 import org.store.structure.dto.BookSearchParametersDto;
 import org.store.structure.dto.CreateBookRequestDto;
@@ -16,43 +19,55 @@ import org.store.structure.repository.book.BookSpecificationBuilder;
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
-    private final BookRepository repository;
+    private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
 
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
-        return bookMapper.toDto(repository.save(book));
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
     public BookDto findById(Long id) {
-        return bookMapper.toDto(repository.findById(id).orElseThrow(
+        return bookMapper.toDto(bookRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Cant find book by id: " + id)));
     }
 
     @Override
     public List<BookDto> findAll(Pageable pageable) {
-        return repository.findAll(pageable)
+        return bookRepository.findAll(pageable)
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
     }
 
     @Override
+    @Transactional
     public BookDto updateBook(Long bookId, Book newBook) {
-        return repository.updateBookById(bookId, newBook);
+        if (bookRepository.findById(bookId).isPresent()) {
+            Book book = bookRepository.findById(bookId).get();
+            book.setTitle(newBook.getTitle());
+            book.setDescription(newBook.getDescription());
+            book.setAuthor(newBook.getAuthor());
+            book.setCoverImage(newBook.getCoverImage());
+            book.setIsbn(newBook.getIsbn());
+            book.setPrice(newBook.getPrice());
+            return bookMapper.toDto(book);
+        } else {
+            throw new EntityNotFoundException("book was not found with this id: " + bookId);
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        repository.deleteById(id);
+        bookRepository.deleteById(id);
     }
 
     @Override
     public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
-        return repository.findAll(bookSpecificationBuilder.build(searchParameters))
+        return bookRepository.findAll(bookSpecificationBuilder.build(searchParameters))
                 .stream()
                 .map(bookMapper::toDto).toList();
     }
