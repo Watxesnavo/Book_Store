@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.store.structure.dto.user.UserLoginResponseDto;
 import org.store.structure.dto.user.UserRegistrationRequestDto;
 import org.store.structure.dto.user.UserResponseDto;
 import org.store.structure.exception.RegistrationException;
+import org.store.structure.model.User;
 import org.store.structure.security.AuthenticationService;
 import org.store.structure.service.user.UserService;
 
@@ -36,5 +38,11 @@ public class AuthenticationController {
             UserRegistrationRequestDto request) throws RegistrationException {
         log.info("register method start");
         return userService.register(request);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/set/admin")
+    public String setAdminRole(@RequestBody User user) {
+        return userService.setAdminRole(user);
     }
 }

@@ -36,16 +36,13 @@ public class UserServiceImpl implements UserService {
         user.setLastName(requestDto.getLastName());
         Role userRole = new Role();
         userRole.setRoleName(Role.RoleName.USER);
-        List<Role> roles = roleService.findAll();
-        for (Role role : roles) {
-            if (role.getRoleName().equals(Role.RoleName.USER)) {
-                user.setRoles(Set.of(role));
-            } else {
-                roleService.save(userRole);
-                user.setRoles(Set.of(userRole));
-                break;
-            }
-        }
+        user.setRoles(Set.of(roleService.findByRoleName("USER")));
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public String setAdminRole(User user) {
+         user.setRoles(Set.of(roleService.findByRoleName("ADMIN")));
+         return "this user has admin authorities now";
     }
 }

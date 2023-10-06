@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: set-admin-role-to-user
+      author: V.Sukhov
+      changes:
+        - update:
+            where: user_id=:value
+            whereParams:
+              param:
+                valueNumeric: "1"
+            tableName: users_roles
+            columns:
+              - column: {name: roles_id, valueNumeric: "2"}
