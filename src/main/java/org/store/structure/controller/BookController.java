@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.store.structure.dto.BookDto;
-import org.store.structure.dto.BookSearchParametersDto;
-import org.store.structure.dto.CreateBookRequestDto;
+import org.store.structure.dto.book.BookDto;
+import org.store.structure.dto.book.BookSearchParametersDto;
+import org.store.structure.dto.book.CreateBookRequestDto;
 import org.store.structure.model.Book;
-import org.store.structure.service.BookService;
+import org.store.structure.service.book.BookService;
 
 @Tag(name = "Book management", description = "Endpoints to manage books")
 @RestController
-@RequestMapping(value = "/api/books")
+@RequestMapping(value = "/books")
 @RequiredArgsConstructor
 @Slf4j
 public class BookController {
@@ -38,6 +39,7 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new book", description = "Create new book")
     public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
@@ -50,12 +52,14 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update a book", description = "updates a book by id")
     public BookDto updateBook(@PathVariable Long id, @RequestBody Book newBook) {
         return bookService.updateBook(id, newBook);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete the book",
             description = "mark a book in BD as deleted (soft deleted)")
     public void delete(@PathVariable Long id) {
