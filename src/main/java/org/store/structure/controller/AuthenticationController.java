@@ -5,6 +5,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +16,6 @@ import org.store.structure.dto.user.UserLoginResponseDto;
 import org.store.structure.dto.user.UserRegistrationRequestDto;
 import org.store.structure.dto.user.UserResponseDto;
 import org.store.structure.exception.RegistrationException;
-import org.store.structure.model.User;
 import org.store.structure.security.AuthenticationService;
 import org.store.structure.service.user.UserService;
 
@@ -29,7 +30,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public UserLoginResponseDto login(@RequestBody UserLoginRequestDto request) {
-        log.info("login method starts");
+        log.info("login method started");
         return authenticationService.authenticate(request);
     }
 
@@ -40,9 +41,17 @@ public class AuthenticationController {
         return userService.register(request);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/set/admin")
-    public String setAdminRole(@RequestBody User user) {
-        return userService.setAdminRole(user);
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/set/admin/{id}")
+    @Transactional
+    public String setAdminRole(@PathVariable Long id) {
+        return userService.setAdminRole(id);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/set/user/{id}")
+    @Transactional
+    public String setUserRole(@PathVariable Long id) {
+        return userService.setUserRole(id);
     }
 }

@@ -1,11 +1,10 @@
 package org.store.structure.service.role;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.store.structure.model.Role;
 import org.store.structure.repository.role.RoleRepository;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

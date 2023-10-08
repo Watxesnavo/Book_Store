@@ -1,7 +1,6 @@
 package org.store.structure.service.book;
 
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
