@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.store.structure.dto.book.BookDto;
 import org.store.structure.dto.book.BookSearchParametersDto;
 import org.store.structure.dto.book.CreateBookRequestDto;
-import org.store.structure.model.Book;
 
 public interface BookService {
     BookDto save(CreateBookRequestDto requestDto);
@@ -14,7 +13,7 @@ public interface BookService {
 
     BookDto findById(Long id);
 
-    BookDto updateBook(Long bookId, Book newBook);
+    BookDto updateBook(Long bookId, CreateBookRequestDto bookDto);
 
     void deleteById(Long id);
 

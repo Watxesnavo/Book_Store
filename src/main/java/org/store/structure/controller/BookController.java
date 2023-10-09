@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.store.structure.dto.book.BookDto;
 import org.store.structure.dto.book.BookSearchParametersDto;
 import org.store.structure.dto.book.CreateBookRequestDto;
-import org.store.structure.model.Book;
 import org.store.structure.service.book.BookService;
 
 @Tag(name = "Book management", description = "Endpoints to manage books")
@@ -55,8 +54,8 @@ public class BookController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Update a book", description = "updates a book by id")
-    public BookDto updateBook(@PathVariable Long id, @RequestBody Book newBook) {
-        return bookService.updateBook(id, newBook);
+    public BookDto updateBook(@PathVariable Long id, @RequestBody CreateBookRequestDto bookDto) {
+        return bookService.updateBook(id, bookDto);
     }
 
     @DeleteMapping("/{id}")

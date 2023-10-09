@@ -43,7 +43,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookDto updateBook(Long bookId, Book newBook) {
+    public BookDto updateBook(Long bookId, CreateBookRequestDto newBook) {
         if (bookRepository.findById(bookId).isPresent()) {
             Book book = bookRepository.findById(bookId).get();
             book.setTitle(newBook.getTitle());

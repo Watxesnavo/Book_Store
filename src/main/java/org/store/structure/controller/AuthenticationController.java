@@ -1,5 +1,6 @@
 package org.store.structure.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,14 @@ public class AuthenticationController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
+    @Operation(summary = "login user", description = "login existing user")
     @PostMapping("/login")
     public UserLoginResponseDto login(@RequestBody UserLoginRequestDto request) {
         log.info("login method started");
         return authenticationService.authenticate(request);
     }
 
+    @Operation(summary = "register new user", description = "registering new users")
     @PostMapping("/register")
     public UserResponseDto register(@RequestBody @Valid
             UserRegistrationRequestDto request) throws RegistrationException {
@@ -41,16 +44,16 @@ public class AuthenticationController {
         return userService.register(request);
     }
 
+    @Operation(summary = "setting admin role to user", description = "setting admin role")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/set/admin/{id}")
-    @Transactional
     public String setAdminRole(@PathVariable Long id) {
         return userService.setAdminRole(id);
     }
 
+    @Operation(summary = "setting user role to user", description = "setting user role")
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/set/user/{id}")
-    @Transactional
     public String setUserRole(@PathVariable Long id) {
         return userService.setUserRole(id);
     }

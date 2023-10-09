@@ -4,6 +4,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.user.UserRegistrationRequestDto;
 import org.store.structure.dto.user.UserResponseDto;
 import org.store.structure.exception.RegistrationException;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public String setAdminRole(Long id) {
         User user = userRepository.findById(id).orElseThrow(RuntimeException::new);
         user.setRoles(Set.of(roleService.findByRoleName("ADMIN")));
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public String setUserRole(Long id) {
         User user = userRepository.findById(id).orElseThrow(RuntimeException::new);
         user.setRoles(Set.of(roleService.findByRoleName("USER")));

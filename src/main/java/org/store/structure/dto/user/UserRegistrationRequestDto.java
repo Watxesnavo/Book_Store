@@ -10,7 +10,6 @@ import org.store.structure.validation.FieldMatch;
 @FieldMatch(first = "password", second = "repeatPassword", message = "passwords do not match!")
 public class UserRegistrationRequestDto {
     @NotBlank
-    @Size(min = 4, max = 50)
     @Email
     private String email;
     @NotBlank
@@ -22,8 +21,6 @@ public class UserRegistrationRequestDto {
     @NotBlank
     @Size(min = 4, max = 100)
     private String password;
-    @NotBlank
-    @Size(min = 4, max = 100)
     private String repeatPassword;
     @Size(max = 300)
     private String shippingAddress;
