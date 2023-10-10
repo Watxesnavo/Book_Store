@@ -1,4 +1,4 @@
-package org.store.structure.dto;
+package org.store.structure.dto.book;
 
 public record BookSearchParametersDto(String[] authors,
                                       String[] titles,

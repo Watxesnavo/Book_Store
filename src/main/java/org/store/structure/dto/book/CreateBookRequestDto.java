@@ -1,4 +1,4 @@
-package org.store.structure.dto;
+package org.store.structure.dto.book;
 
 import java.math.BigDecimal;
 import lombok.Data;
@@ -12,4 +12,5 @@ public class CreateBookRequestDto {
     private BigDecimal price;
     private String description;
     private String coverImage;
+    private boolean deleted;
 }

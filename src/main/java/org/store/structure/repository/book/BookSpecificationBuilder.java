@@ -3,7 +3,7 @@ package org.store.structure.repository.book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-import org.store.structure.dto.BookSearchParametersDto;
+import org.store.structure.dto.book.BookSearchParametersDto;
 import org.store.structure.model.Book;
 import org.store.structure.repository.SpecificationBuilder;
 import org.store.structure.repository.SpecificationProviderManager;
@@ -11,7 +11,7 @@ import org.store.structure.repository.SpecificationProviderManager;
 @RequiredArgsConstructor
 @Component
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
-    private SpecificationProviderManager<Book> specificationProviderManager;
+    private final SpecificationProviderManager<Book> specificationProviderManager;
 
     @Override
     public Specification<Book> build(BookSearchParametersDto searchParameters) {
