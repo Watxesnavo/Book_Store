@@ -20,5 +20,5 @@ public interface BookService {
 
     List<BookDto> searchBooks(BookSearchParametersDto searchParameters);
 
-    List<BookDto> findAllByCategoryId(Long categoryId);
+    List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId);
 }
