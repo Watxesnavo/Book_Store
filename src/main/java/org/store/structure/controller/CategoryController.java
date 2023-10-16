@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.store.structure.dto.book.BookDto;
+import org.store.structure.dto.book.BookDtoWithoutCategoryIds;
 import org.store.structure.dto.category.CategoryRequestDto;
 import org.store.structure.dto.category.CategoryResponseDto;
 import org.store.structure.service.book.BookService;
@@ -71,7 +71,7 @@ public class CategoryController {
     @GetMapping("/{id}/books")
     @Operation(summary = "Get books by category's id",
             description = "show books by it's category's id")
-    public List<BookDto> getBooksByCategoryId(@PathVariable Long id) {
+    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
         return bookService.findAllByCategoryId(id);
     }
 }
