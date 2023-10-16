@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.store.structure.dto.book.BookDto;
+import org.store.structure.dto.book.BookDtoWithoutCategoryIds;
 import org.store.structure.dto.book.BookSearchParametersDto;
 import org.store.structure.dto.book.CreateBookRequestDto;
 import org.store.structure.service.book.BookService;
@@ -47,7 +48,7 @@ public class BookController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get book by its id", description = "get a book by id")
-    public BookDto getBookById(@PathVariable Long id) {
+    public BookDtoWithoutCategoryIds getBookById(@PathVariable Long id) {
         return bookService.findById(id);
     }
 
