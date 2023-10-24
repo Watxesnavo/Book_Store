@@ -1,6 +1,7 @@
 package org.store.structure.service.book;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,14 +34,6 @@ public class BookServiceImpl implements BookService {
         Book book = bookMapper.toEntity(requestDto);
         book.setCategories(getCategoriesByIds(requestDto.getCategoryIds()));
         return bookMapper.toDto(bookRepository.save(book));
-    }
-
-    private Set<Category> getCategoriesByIds(Collection<Long> ids) {
-        return ids.stream()
-                .map(categoryRepository::findById)
-                .map(category -> category.orElseThrow(
-                        () -> new EntityNotFoundException("Can't find category " + category)))
-                .collect(Collectors.toSet());
     }
 
     @Override
@@ -89,8 +82,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId) {
-        return bookRepository.findAllByCategoryId(categoryId).stream()
+        return bookRepository.findAllByCategoriesId(categoryId).stream()
                 .map(bookMapper::toDtoWithoutCategories)
                 .toList();
+    }
+
+    private Set<Category> getCategoriesByIds(Collection<Long> ids) {
+        List<Category> categories = categoryRepository.findAllById(ids);
+        if (categories.size() > 1) {
+            return new HashSet<>(categories);
+        }
+        throw new RuntimeException("Can't get categories by this ids " + ids);
     }
 }

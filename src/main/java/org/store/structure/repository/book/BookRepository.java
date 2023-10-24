@@ -7,7 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 import org.store.structure.model.Book;
 
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-    @Query(value = "SELECT * FROM books b INNER JOIN books_categories bc ON "
-            + "b.id = bc.book_id WHERE bc.category_id = :categoryId", nativeQuery = true)
-    List<Book> findAllByCategoryId(Long categoryId);
+    List<Book> findAllByCategoriesId(Long categoryId);
 }

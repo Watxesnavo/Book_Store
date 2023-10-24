@@ -1,6 +1,5 @@
 package org.store.structure.service.category;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,8 @@ import org.store.structure.exception.EntityNotFoundException;
 import org.store.structure.mapper.CategoryMapper;
 import org.store.structure.model.Category;
 import org.store.structure.repository.category.CategoryRepository;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -43,14 +44,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDto update(Long id, CategoryRequestDto categoryDto) {
-        if (categoryRepository.findById(id).isPresent()) {
-            Category category = categoryRepository.findById(id).get();
-            category.setName(categoryDto.getName());
-            category.setDescription(categoryDto.getDescription());
-            return categoryMapper.toDto(category);
-        } else {
-            throw new EntityNotFoundException("Can't find category by this id: " + id);
-        }
+        Category category = categoryRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't find category by this id: " + id)
+        );
+        category.setName(categoryDto.getName());
+        category.setDescription(categoryDto.getDescription());
+        return categoryMapper.toDto(category);
     }
 
     @Override
