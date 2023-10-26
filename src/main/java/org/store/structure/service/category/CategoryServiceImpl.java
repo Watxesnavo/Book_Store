@@ -1,5 +1,6 @@
 package org.store.structure.service.category;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +10,6 @@ import org.store.structure.exception.EntityNotFoundException;
 import org.store.structure.mapper.CategoryMapper;
 import org.store.structure.model.Category;
 import org.store.structure.repository.category.CategoryRepository;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
