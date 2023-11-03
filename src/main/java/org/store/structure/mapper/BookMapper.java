@@ -1,7 +1,6 @@
 package org.store.structure.mapper;
 
 import java.util.stream.Collectors;
-
 import org.mapstruct.*;
 import org.store.structure.config.MapperConfig;
 import org.store.structure.dto.book.BookDto;
