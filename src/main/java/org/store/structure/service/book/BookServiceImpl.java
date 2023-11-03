@@ -36,7 +36,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDtoWithoutCategoryIds findById(Long id) {
+    public BookDtoWithoutCategoryIds getById(Long id) {
         return bookMapper.toDtoWithoutCategories(bookRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Cant find book by id: " + id)));
     }

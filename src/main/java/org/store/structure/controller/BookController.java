@@ -49,7 +49,7 @@ public class BookController {
     @GetMapping("/{id}")
     @Operation(summary = "Get book by its id", description = "get a book by id")
     public BookDtoWithoutCategoryIds getBookById(@PathVariable Long id) {
-        return bookService.findById(id);
+        return bookService.getById(id);
     }
 
     @PutMapping("/{id}")

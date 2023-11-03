@@ -4,7 +4,7 @@ import java.util.Arrays;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.store.structure.model.Book;
-import org.store.structure.repository.SpecificationProvider;
+import org.store.structure.repository.book.spec.build.SpecificationProvider;
 
 @Component
 public class AuthorSpecificationProvider implements SpecificationProvider<Book> {

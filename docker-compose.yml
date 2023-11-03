@@ -26,6 +26,7 @@ services:
     env_file: ./.env
     ports:
       - $SPRING_LOCAL_PORT:$SPRING_DOCKER_PORT
+      - $DEBUG_PORT:$DEBUG_PORT
     environment:
       SPRING_APPLICATION_JSON: '{
       "spring.datasource.url" : "jdbc:postgresql://postgresdb:$POSTGRES_DOCKER_PORT/POSTGRES_DATABASE",
