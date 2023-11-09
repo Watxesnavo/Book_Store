@@ -7,19 +7,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.user.UserRegistrationRequestDto;
 import org.store.structure.dto.user.UserResponseDto;
+import org.store.structure.exception.EntityNotFoundException;
 import org.store.structure.exception.RegistrationException;
 import org.store.structure.mapper.UserMapper;
+import org.store.structure.model.ShoppingCart;
 import org.store.structure.model.User;
+import org.store.structure.repository.shoppingcart.ShoppingCartRepository;
 import org.store.structure.repository.user.UserRepository;
 import org.store.structure.service.role.RoleService;
 
 @RequiredArgsConstructor
 @Component
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final RoleService roleService;
+    private final ShoppingCartRepository cartRepository;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
@@ -34,22 +39,29 @@ public class UserServiceImpl implements UserService {
         user.setLastName(requestDto.getLastName());
         user.setShippingAddress(requestDto.getShippingAddress());
         user.setRoles(Set.of(roleService.findByRoleName("USER")));
-        return userMapper.toUserResponse(userRepository.save(user));
+        User saved = userRepository.save(user);
+        setShoppingCartToUser(saved);
+        return userMapper.toUserResponse(saved);
     }
 
     @Override
-    @Transactional
     public String setAdminRole(Long id) {
-        User user = userRepository.findById(id).orElseThrow(RuntimeException::new);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Can't find user by id: " + id));
         user.setRoles(Set.of(roleService.findByRoleName("ADMIN")));
         return "this user has admin authorities now";
     }
 
     @Override
-    @Transactional
     public String setUserRole(Long id) {
         User user = userRepository.findById(id).orElseThrow(RuntimeException::new);
         user.setRoles(Set.of(roleService.findByRoleName("USER")));
         return "this user has user authorities now";
+    }
+
+    private void setShoppingCartToUser(User user) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUser(user);
+        cartRepository.save(cart);
     }
 }

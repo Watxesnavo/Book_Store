@@ -4,10 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.store.structure.dto.cart_item.CartItemRequestDto;
-import org.store.structure.dto.cart_item.CartItemUpdateDto;
-import org.store.structure.dto.shopping_cart.ShoppingCartResponseDto;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.store.structure.dto.cartitem.CartItemRequestDto;
+import org.store.structure.dto.cartitem.CartItemUpdateDto;
+import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
+import org.store.structure.mapper.ShoppingCartMapper;
 import org.store.structure.service.shoppingcart.ShoppingCartService;
 
 @Tag(name = "Shopping Carts management", description = "Endpoints to manage shopping carts")
@@ -16,12 +24,13 @@ import org.store.structure.service.shoppingcart.ShoppingCartService;
 @RequiredArgsConstructor
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartMapper shoppingCartMapper;
 
     @GetMapping
     @Operation(summary = "show current cart",
             description = "show the current logged user shopping cart")
     public ShoppingCartResponseDto getCurrentShoppingCart() {
-        return shoppingCartService.getCurrentCart();
+        return shoppingCartMapper.toDto(shoppingCartService.getCurrentCart());
     }
 
     @PostMapping
@@ -37,13 +46,11 @@ public class ShoppingCartController {
         return shoppingCartService.updateItem(itemId, dto);
     }
 
-
-
     @DeleteMapping("/cart-items/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "delete item from cart",
             description = "soft delete item, and delete item from current cart")
-    public void deleteItem(@PathVariable Long id) {
-        shoppingCartService.deleteItem(id);
+    public ShoppingCartResponseDto deleteItem(@PathVariable Long id) {
+        return shoppingCartService.deleteItem(id);
     }
 }

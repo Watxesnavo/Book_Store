@@ -1,4 +1,4 @@
-package org.store.structure.dto.cart_item;
+package org.store.structure.dto.cartitem;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package org.store.structure.repository.shopping_cart;
+package org.store.structure.repository.shoppingcart;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.store.structure.model.ShoppingCart;

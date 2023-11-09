@@ -1,23 +1,22 @@
 package org.store.structure.service.shoppingcart;
 
-import jakarta.persistence.EntityNotFoundException;
+import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.store.structure.dto.cart_item.CartItemRequestDto;
-import org.store.structure.dto.cart_item.CartItemUpdateDto;
-import org.store.structure.dto.shopping_cart.ShoppingCartRequestDto;
-import org.store.structure.dto.shopping_cart.ShoppingCartResponseDto;
-import org.store.structure.mapper.CartItemMapper;
+import org.store.structure.dto.cartitem.CartItemRequestDto;
+import org.store.structure.dto.cartitem.CartItemResponseDto;
+import org.store.structure.dto.cartitem.CartItemUpdateDto;
+import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
+import org.store.structure.exception.EntityNotFoundException;
 import org.store.structure.mapper.ShoppingCartMapper;
 import org.store.structure.model.CartItem;
 import org.store.structure.model.ShoppingCart;
-import org.store.structure.repository.cart_item.CartItemRepository;
-import org.store.structure.repository.shopping_cart.ShoppingCartRepository;
-
-import java.util.Iterator;
+import org.store.structure.repository.cartitem.CartItemRepository;
+import org.store.structure.repository.shoppingcart.ShoppingCartRepository;
+import org.store.structure.service.cartitem.CartItemService;
 
 @Service
 @RequiredArgsConstructor
@@ -25,23 +24,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
     private final CartItemRepository cartItemRepository;
-    private final CartItemMapper cartItemMapper;
+    private final CartItemService cartItemService;
 
     @Override
-    public ShoppingCartResponseDto getCurrentCart() {
+    public ShoppingCart getCurrentCart() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
-        ShoppingCart shoppingCart = shoppingCartRepository.findAll().stream()
+        return shoppingCartRepository.findAll().stream()
                 .filter(cart -> cart.getUser().getEmail().equals(userName))
                 .findFirst()
-                .orElseThrow(EntityNotFoundException::new);
-        return shoppingCartMapper.toDto(shoppingCart);
-    }
-
-    @Override
-    public ShoppingCartResponseDto save(ShoppingCartRequestDto requestDto) {
-        ShoppingCart shoppingCart = shoppingCartMapper.toEntity(requestDto);
-        return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
+                .orElseThrow(() -> new EntityNotFoundException("Can't find a cart by email: "
+                        + userName));
     }
 
     @Override
@@ -49,21 +42,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartResponseDto updateItem(Long itemId, CartItemUpdateDto dto) {
         CartItem cartItem = cartItemRepository
                 .findById(itemId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Can't find item by id: " + itemId));
         cartItem.setQuantity(dto.getQuantity());
-        return getCurrentCart();
+        return shoppingCartMapper.toDto(getCurrentCart());
     }
 
     @Override
-    @Transactional
     public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto) {
-        ShoppingCartResponseDto currentCartDto = getCurrentCart();
-        ShoppingCart shoppingCart = shoppingCartRepository
-                .findById(currentCartDto.getId())
-                .orElseThrow(EntityNotFoundException::new);
-        CartItem cartItem = cartItemMapper.toEntity(requestDto);
-        shoppingCart.getCartItems().add(cartItem);
-        return currentCartDto;
+        CartItemResponseDto savedItem = cartItemService.save(requestDto);
+        ShoppingCart currentCart = getCurrentCart();
+        CartItem cartItem = cartItemRepository.findById(savedItem.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find item by id: "
+                        + savedItem.getId()));
+        currentCart.getCartItems().add(cartItem);
+        return shoppingCartMapper.toDto(currentCart);
     }
 
     @Override
@@ -71,7 +63,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartResponseDto deleteItem(Long itemId) {
         ShoppingCart shoppingCart = shoppingCartRepository
                 .findById(getCurrentCart().getId())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Can't find a cart by id: "
+                        + getCurrentCart().getId()));
         Iterator<CartItem> iterator = shoppingCart.getCartItems().stream().iterator();
         new CartItem();
         CartItem item;

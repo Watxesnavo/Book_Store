@@ -1,6 +1,14 @@
 package org.store.structure.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
@@ -17,12 +25,11 @@ public class ShoppingCart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    @PrimaryKeyJoinColumn
     private User user;
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "shopping_carts_cart_items",
-            joinColumns = @JoinColumn(name = "shopping_cart_id"),
-            inverseJoinColumns = @JoinColumn(name = "cart_item_id"))
+    //    @JoinTable(name = "shopping_carts_cart_items",
+    //            joinColumns = @JoinColumn(name = "shopping_cart_id"),
+    //            inverseJoinColumns = @JoinColumn(name = "cart_item_id"))
     private Set<CartItem> cartItems = new HashSet<>();
     @Column(nullable = false)
     private boolean isDeleted = false;

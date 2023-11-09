@@ -1,8 +1,8 @@
 package org.store.structure.service.cartitem;
 
 import java.util.List;
-import org.store.structure.dto.cart_item.CartItemRequestDto;
-import org.store.structure.dto.cart_item.CartItemResponseDto;
+import org.store.structure.dto.cartitem.CartItemRequestDto;
+import org.store.structure.dto.cartitem.CartItemResponseDto;
 
 public interface CartItemService {
     List<CartItemResponseDto> findAll();

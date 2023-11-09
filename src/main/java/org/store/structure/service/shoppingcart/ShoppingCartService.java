@@ -1,16 +1,14 @@
 package org.store.structure.service.shoppingcart;
 
-import org.store.structure.dto.cart_item.CartItemRequestDto;
-import org.store.structure.dto.cart_item.CartItemUpdateDto;
-import org.store.structure.dto.shopping_cart.ShoppingCartRequestDto;
-import org.store.structure.dto.shopping_cart.ShoppingCartResponseDto;
+import org.store.structure.dto.cartitem.CartItemRequestDto;
+import org.store.structure.dto.cartitem.CartItemUpdateDto;
+import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
+import org.store.structure.model.ShoppingCart;
 
 public interface ShoppingCartService {
-    ShoppingCartResponseDto getCurrentCart();
+    ShoppingCart getCurrentCart();
 
     ShoppingCartResponseDto addBook(CartItemRequestDto requestDto);
-
-    ShoppingCartResponseDto save(ShoppingCartRequestDto requestDto);
 
     ShoppingCartResponseDto updateItem(Long itemId, CartItemUpdateDto dto);
 

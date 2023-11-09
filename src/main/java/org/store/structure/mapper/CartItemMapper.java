@@ -1,21 +1,21 @@
 package org.store.structure.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.store.structure.config.MapperConfig;
-import org.store.structure.dto.cart_item.CartItemRequestDto;
-import org.store.structure.dto.cart_item.CartItemResponseDto;
+import org.store.structure.dto.cartitem.CartItemResponseDto;
 import org.store.structure.model.CartItem;
-import org.store.structure.repository.book.BookRepository;
 
-@Mapper(config = MapperConfig.class,
-        uses = {BookRepository.class, BookMapper.class}
+@Mapper(config = MapperConfig.class
 )
-public interface CartItemMapper {
-    @Mapping(source = "book.id", target = "bookId")
-    @Mapping(source = "book.title", target = "bookTitle")
-    CartItemResponseDto toDto(CartItem cartItem);
+public abstract class CartItemMapper {
 
-    @Mapping(target = "book", source = "requestDto.bookId", qualifiedByName = "bookFromId")
-    CartItem toEntity(CartItemRequestDto requestDto);
+    public CartItemResponseDto toDto(CartItem cartItem) {
+        CartItemResponseDto dto = new CartItemResponseDto();
+        dto.setId(cartItem.getId());
+        dto.setQuantity(cartItem.getQuantity());
+        dto.setShoppingCartId(cartItem.getShoppingCart().getId());
+        dto.setBookId(cartItem.getBook().getId());
+        dto.setBookTitle(cartItem.getBook().getTitle());
+        return dto;
+    }
 }
