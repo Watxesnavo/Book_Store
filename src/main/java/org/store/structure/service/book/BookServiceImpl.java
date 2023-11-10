@@ -88,7 +88,7 @@ public class BookServiceImpl implements BookService {
 
     private Set<Category> getCategoriesByIds(Collection<Long> ids) {
         List<Category> categories = categoryRepository.findAllById(ids);
-        if (categories.size() > 1) {
+        if (!categories.isEmpty()) {
             return new HashSet<>(categories);
         }
         throw new RuntimeException("Can't get categories by this ids " + ids);

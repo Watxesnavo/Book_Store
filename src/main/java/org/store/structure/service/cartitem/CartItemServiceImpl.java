@@ -32,17 +32,17 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItemResponseDto getById(Long id) {
-        return cartItemMapper.toDto(repository.findById(id)
+    public CartItem getById(Long id) {
+        return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find cart by id:"
-                        + id)));
+                        + id));
     }
 
     @Override
     public CartItemResponseDto save(CartItemRequestDto requestDto) {
         CartItem cartItem = new CartItem();
         cartItem.setBook(bookRepository.findById(requestDto.getBookId())
-                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id:"
+                .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: "
                         + requestDto.getBookId())));
         cartItem.setQuantity(requestDto.getQuantity());
         cartItem.setShoppingCart(getCurrentCart());
@@ -56,7 +56,8 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setBook(
                 bookRepository
                         .findById(requestDto.getBookId())
-                        .orElseThrow());
+                        .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: "
+                                + requestDto.getBookId())));
         cartItem.setQuantity(requestDto.getQuantity());
         return cartItemMapper.toDto(cartItem);
     }
@@ -69,10 +70,8 @@ public class CartItemServiceImpl implements CartItemService {
     private ShoppingCart getCurrentCart() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
-        return shoppingCartRepository.findAll().stream()
-                .filter(cart -> cart.getUser().getEmail().equals(userName))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Can't find a cart by email: "
+        return shoppingCartRepository.findFirstByUserEmail(userName)
+                .orElseThrow(() -> new EntityNotFoundException("Can't find cart by email: "
                         + userName));
     }
 }

@@ -13,11 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.store.structure.dto.cartitem.CartItemRequestDto;
-import org.store.structure.dto.cartitem.CartItemResponseDto;
 import org.store.structure.dto.cartitem.CartItemUpdateDto;
 import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
 import org.store.structure.mapper.ShoppingCartMapper;
-import org.store.structure.service.cartitem.CartItemService;
 import org.store.structure.service.shoppingcart.ShoppingCartService;
 
 @Tag(name = "Shopping Carts management", description = "Endpoints to manage shopping carts")
@@ -27,7 +25,6 @@ import org.store.structure.service.shoppingcart.ShoppingCartService;
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
     private final ShoppingCartMapper shoppingCartMapper;
-    private final CartItemService cartItemService;
 
     @GetMapping
     @Operation(summary = "show current cart",
@@ -39,8 +36,7 @@ public class ShoppingCartController {
     @PostMapping
     @Operation(summary = "add book to the cart", description = "add new item to the cart")
     public ShoppingCartResponseDto addBook(@RequestBody CartItemRequestDto requestDto) {
-        CartItemResponseDto saved = cartItemService.save(requestDto);
-        return shoppingCartService.addBook(saved.getId());
+        return shoppingCartService.addBook(requestDto);
     }
 
     @PutMapping("/cart-items/{itemId}")
