@@ -1,6 +1,5 @@
 package org.store.structure.service.shoppingcart;
 
-import org.store.structure.dto.cartitem.CartItemRequestDto;
 import org.store.structure.dto.cartitem.CartItemUpdateDto;
 import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
 import org.store.structure.model.ShoppingCart;
@@ -8,7 +7,7 @@ import org.store.structure.model.ShoppingCart;
 public interface ShoppingCartService {
     ShoppingCart getCurrentCart();
 
-    ShoppingCartResponseDto addBook(CartItemRequestDto requestDto);
+    ShoppingCartResponseDto addBook(Long itemId);
 
     ShoppingCartResponseDto updateItem(Long itemId, CartItemUpdateDto dto);
 

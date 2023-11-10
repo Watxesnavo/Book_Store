@@ -2,12 +2,11 @@ package org.store.structure.service.shoppingcart;
 
 import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.store.structure.dto.cartitem.CartItemRequestDto;
-import org.store.structure.dto.cartitem.CartItemResponseDto;
 import org.store.structure.dto.cartitem.CartItemUpdateDto;
 import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
 import org.store.structure.exception.EntityNotFoundException;
@@ -16,18 +15,18 @@ import org.store.structure.model.CartItem;
 import org.store.structure.model.ShoppingCart;
 import org.store.structure.repository.cartitem.CartItemRepository;
 import org.store.structure.repository.shoppingcart.ShoppingCartRepository;
-import org.store.structure.service.cartitem.CartItemService;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
     private final CartItemRepository cartItemRepository;
-    private final CartItemService cartItemService;
 
     @Override
     public ShoppingCart getCurrentCart() {
+        log.info("started getCurrentCart method now");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
         return shoppingCartRepository.findAll().stream()
@@ -48,12 +47,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto) {
-        CartItemResponseDto savedItem = cartItemService.save(requestDto);
+    public ShoppingCartResponseDto addBook(Long itemId) {
+        log.info("started addBook method now");
         ShoppingCart currentCart = getCurrentCart();
-        CartItem cartItem = cartItemRepository.findById(savedItem.getId())
+        CartItem cartItem = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find item by id: "
-                        + savedItem.getId()));
+                        + itemId));
         currentCart.getCartItems().add(cartItem);
         return shoppingCartMapper.toDto(currentCart);
     }
