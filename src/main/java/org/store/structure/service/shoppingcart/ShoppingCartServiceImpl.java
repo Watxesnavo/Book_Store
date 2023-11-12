@@ -48,6 +48,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart currentCart = getCurrentCart();
         CartItem cartItem = cartItemService.getById(saved.getId());
         currentCart.getCartItems().add(cartItem);
+        log.info("return shopping cart dto start");
         return shoppingCartMapper.toDto(currentCart);
     }
 
