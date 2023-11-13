@@ -42,13 +42,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto) {
         log.info("started addBook method now");
         CartItemResponseDto saved = cartItemService.save(requestDto);
         ShoppingCart currentCart = getCurrentCart();
         CartItem cartItem = cartItemService.getById(saved.getId());
         currentCart.getCartItems().add(cartItem);
-        log.info("return shopping cart dto start");
         return shoppingCartMapper.toDto(currentCart);
     }
 
