@@ -12,8 +12,12 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/06-insert-admin-role-into-roles-table.yaml
   - include:
-      file: db/changelog/changes/07-set-first-admin-user.yaml
+      file: db/changelog/changes/07-create-categories-table.yaml
   - include:
-      file: db/changelog/changes/08-create-categories-table.yaml
+      file: db/changelog/changes/08-create-books-categories-table.yaml
   - include:
-      file: db/changelog/changes/09-create-books-categories-table.yaml
+      file: db/changelog/changes/09-create-shopping_carts-table.yaml
+  - include:
+      file: db/changelog/changes/10-create-cart_items_table.yaml
+  - include:
+      file: db/changelog/changes/set-first-admin-user.yaml

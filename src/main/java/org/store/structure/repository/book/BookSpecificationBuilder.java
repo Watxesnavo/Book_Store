@@ -5,8 +5,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.store.structure.dto.book.BookSearchParametersDto;
 import org.store.structure.model.Book;
-import org.store.structure.repository.SpecificationBuilder;
-import org.store.structure.repository.SpecificationProviderManager;
+import org.store.structure.repository.book.spec.build.SpecificationBuilder;
+import org.store.structure.repository.book.spec.build.SpecificationProviderManager;
 
 @RequiredArgsConstructor
 @Component
