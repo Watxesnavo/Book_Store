@@ -2,6 +2,8 @@ package org.store.structure.service.user;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,5 +65,11 @@ public class UserServiceImpl implements UserService {
         ShoppingCart cart = new ShoppingCart();
         cart.setUser(user);
         cartRepository.save(cart);
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new EntityNotFoundException("Can't find a user by email"));
     }
 }
