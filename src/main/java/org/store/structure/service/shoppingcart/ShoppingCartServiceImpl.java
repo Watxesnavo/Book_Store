@@ -2,8 +2,7 @@ package org.store.structure.service.shoppingcart;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.cartitem.CartItemRequestDto;
@@ -26,27 +25,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemService cartItemService;
 
     @Override
-    public ShoppingCart getCurrentCart() {
+    public ShoppingCart getCurrentCart(UserDetails user) {
         log.info("started getCurrentCart method now");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        return findFirstByEmail(userName);
+        return findFirstByEmail(user.getUsername());
     }
 
     @Override
     @Transactional
-    public ShoppingCartResponseDto updateItem(Long itemId, CartItemUpdateDto dto) {
+    public ShoppingCartResponseDto updateItem(
+            Long itemId, CartItemUpdateDto dto, UserDetails user
+    ) {
         CartItem cartItem = cartItemService.getById(itemId);
         cartItem.setQuantity(dto.getQuantity());
-        return shoppingCartMapper.toDto(getCurrentCart());
+        return shoppingCartMapper.toDto(getCurrentCart(user));
     }
 
     @Override
     @Transactional
-    public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto) {
+    public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto, UserDetails user) {
         log.info("started addBook method now");
-        CartItemResponseDto saved = cartItemService.save(requestDto);
-        ShoppingCart currentCart = getCurrentCart();
+        CartItemResponseDto saved = cartItemService.save(requestDto, user);
+        ShoppingCart currentCart = getCurrentCart(user);
         CartItem cartItem = cartItemService.getById(saved.getId());
         currentCart.getCartItems().add(cartItem);
         return shoppingCartMapper.toDto(currentCart);
@@ -54,9 +53,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     @Transactional
-    public ShoppingCartResponseDto deleteItem(Long itemId) {
+    public ShoppingCartResponseDto deleteItem(Long itemId, UserDetails user) {
         cartItemService.deleteById(itemId);
-        return shoppingCartMapper.toDto(getCurrentCart());
+        return shoppingCartMapper.toDto(getCurrentCart(user));
     }
 
     @Override

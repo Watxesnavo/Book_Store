@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,15 +30,16 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "place order", description = "create a new order in db")
-    public OrderResponseDto placeNewOrder(@RequestBody OrderRequestDto requestDto) {
-        return orderService.placeOrder(requestDto);
+    public OrderResponseDto placeNewOrder(@RequestBody OrderRequestDto requestDto,
+                                          @AuthenticationPrincipal UserDetails user) {
+        return orderService.placeOrder(requestDto, user);
     }
 
     @GetMapping
     @Operation(summary = "get all user orders",
             description = "show all the orders that created a user")
-    public List<OrderResponseDto> getOrderHistory() {
-        return orderService.getOrderHistory();
+    public List<OrderResponseDto> getOrderHistory(UserDetails user) {
+        return orderService.getOrderHistory(user);
     }
 
     @PatchMapping("/{id}")

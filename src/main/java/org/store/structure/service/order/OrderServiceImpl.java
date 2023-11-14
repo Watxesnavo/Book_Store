@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.order.OrderRequestDto;
@@ -31,19 +32,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponseDto placeOrder(OrderRequestDto requestDto) {
-        Order order = saveDefaultOrder(LocalDateTime.now());
-        orderItemService.saveAllItems();
+    public OrderResponseDto placeOrder(OrderRequestDto requestDto, UserDetails user) {
+        Order order = saveDefaultOrder();
+        orderItemService.saveAllItems(order, user);
         order.setShippingAddress(requestDto.getShippingAddress());
-        order.setOrderItems(orderItemService.getOrderItems());
-        order.setTotal(orderItemService.getItemsTotal());
+        order.setOrderItems(orderItemService.getOrderItems(user));
+        order.setTotal(orderItemService.getItemsTotal(user));
         return orderMapper.toDto(order);
     }
 
     @Override
-    public List<OrderResponseDto> getOrderHistory() {
+    public List<OrderResponseDto> getOrderHistory(UserDetails user) {
         List<Order> orders = orderRepository.findAllByUserEmail(
-                userService.getCurrentUser().getEmail()
+                user.getUsername()
         );
         return orders.stream().map(orderMapper::toDto).toList();
     }
@@ -74,9 +75,9 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    private Order saveDefaultOrder(LocalDateTime date) {
+    private Order saveDefaultOrder() {
         Order order = new Order();
-        order.setOrderDate(date);
+        order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.Status.CREATED);
         order.setUser(userService.getCurrentUser());
         order.setShippingAddress(userService.getCurrentUser().getShippingAddress());
