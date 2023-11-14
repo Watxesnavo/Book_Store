@@ -30,18 +30,10 @@ public class OrderItemServiceImpl implements OrderItemService {
     public void saveAllItems() {
         ShoppingCart currentCart = shoppingCartService.getCurrentCart();
         Set<CartItem> cartItems = currentCart.getCartItems();
-        Set<OrderItem> orderItems = new HashSet<>();
         Order order = orderRepository.findByUserEmail(
                 userService.getCurrentUser().getEmail()
         );
-        for (CartItem cartItem : cartItems) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setBook(cartItem.getBook());
-            orderItem.setPrice(bookService.findById(cartItem.getBook().getId()).getPrice());
-            orderItem.setOrder(order);
-            orderItems.add(orderItem);
-        }
+        Set<OrderItem> orderItems = transformCartToOrderItems(cartItems, order);
         if (!orderItems.containsAll(orderItemRepository.findAll())) {
             orderItemRepository.saveAll(orderItems);
         }
@@ -64,5 +56,18 @@ public class OrderItemServiceImpl implements OrderItemService {
                 .map(OrderItem::getPrice)
                 .toList();
         return prices.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
+    }
+
+    private Set<OrderItem> transformCartToOrderItems(Set<CartItem> cartItems, Order order) {
+        Set<OrderItem> orderItems = new HashSet<>();
+        for (CartItem cartItem : cartItems) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setBook(cartItem.getBook());
+            orderItem.setPrice(bookService.findById(cartItem.getBook().getId()).getPrice());
+            orderItem.setOrder(order);
+            orderItems.add(orderItem);
+        }
+        return orderItems;
     }
 }
