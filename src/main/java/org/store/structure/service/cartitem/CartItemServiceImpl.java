@@ -3,8 +3,7 @@ package org.store.structure.service.cartitem;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.cartitem.CartItemRequestDto;
@@ -40,13 +39,13 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItemResponseDto save(CartItemRequestDto requestDto) {
+    public CartItemResponseDto save(CartItemRequestDto requestDto, UserDetails user) {
         CartItem cartItem = new CartItem();
         cartItem.setBook(bookRepository.findById(requestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: "
                         + requestDto.getBookId())));
         cartItem.setQuantity(requestDto.getQuantity());
-        cartItem.setShoppingCart(getCurrentCart());
+        cartItem.setShoppingCart(getCurrentCart(user));
         return cartItemMapper.toDto(repository.save(cartItem));
     }
 
@@ -68,11 +67,9 @@ public class CartItemServiceImpl implements CartItemService {
         repository.deleteById(id);
     }
 
-    private ShoppingCart getCurrentCart() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        return shoppingCartRepository.findFirstByUserEmail(userName)
+    private ShoppingCart getCurrentCart(UserDetails user) {
+        return shoppingCartRepository.findFirstByUserEmail(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find cart by email: "
-                        + userName));
+                        + user.getUsername()));
     }
 }

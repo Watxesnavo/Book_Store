@@ -23,11 +23,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role findByRoleName(String roleName) {
-        List<Role> roles = roleRepository.findAll();
-        return roles.stream()
-                .filter(role -> role.getRoleName().name().equals(roleName))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        return roleRepository.findByRoleName(Role.RoleName.valueOf(roleName));
     }
 
     @Override
