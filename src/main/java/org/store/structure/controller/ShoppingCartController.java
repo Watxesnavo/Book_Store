@@ -2,6 +2,7 @@ package org.store.structure.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,7 +38,7 @@ public class ShoppingCartController {
     @PostMapping
     @Operation(summary = "add book to the cart", description = "add new item to the cart")
     public ShoppingCartResponseDto addBook(
-            @RequestBody CartItemRequestDto requestDto, UserDetails user
+            @RequestBody @Valid CartItemRequestDto requestDto, UserDetails user
     ) {
         return shoppingCartService.addBook(requestDto, user);
     }
@@ -45,7 +46,7 @@ public class ShoppingCartController {
     @PutMapping("/cart-items/{itemId}")
     @Operation(summary = "update item", description = "update quantity of item")
     public ShoppingCartResponseDto updateItem(@PathVariable Long itemId,
-                                              @RequestBody CartItemUpdateDto dto,
+                                              @RequestBody @Valid CartItemUpdateDto dto,
                                               UserDetails user) {
         return shoppingCartService.updateItem(itemId, dto, user);
     }

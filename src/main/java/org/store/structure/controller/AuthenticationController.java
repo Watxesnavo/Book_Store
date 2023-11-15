@@ -30,7 +30,7 @@ public class AuthenticationController {
 
     @Operation(summary = "login user", description = "login existing user")
     @PostMapping("/login")
-    public UserLoginResponseDto login(@RequestBody UserLoginRequestDto request) {
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto request) {
         log.info("login method started");
         return authenticationService.authenticate(request);
     }

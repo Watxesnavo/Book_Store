@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.store.structure.dto.book.BookDto;
 import org.store.structure.dto.book.BookDtoWithoutCategoryIds;
@@ -38,25 +38,26 @@ public class BookController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Create a new book", description = "Create new book")
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+    public ResponseEntity<BookDto> createBook(@RequestBody CreateBookRequestDto requestDto) {
         log.info("createBook method started");
-        return bookService.save(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookService.save(requestDto));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get book by its id", description = "get a book by id")
-    public BookDtoWithoutCategoryIds getBookById(@PathVariable Long id) {
-        return bookService.findById(id);
+    public ResponseEntity<BookDtoWithoutCategoryIds> getBookById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.findById(id));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Update a book", description = "updates a book by id")
-    public BookDto updateBook(@PathVariable Long id, @RequestBody CreateBookRequestDto bookDto) {
-        return bookService.updateBook(id, bookDto);
+    public ResponseEntity<BookDto> updateBook(
+            @PathVariable Long id, @RequestBody CreateBookRequestDto bookDto
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBook(id, bookDto));
     }
 
     @DeleteMapping("/{id}")
@@ -70,7 +71,9 @@ public class BookController {
     @GetMapping("/search")
     @Operation(summary = "search a book with parameters",
             description = "criteria search for a book")
-    public List<BookDto> searchBooks(BookSearchParametersDto searchParameters) {
-        return bookService.searchBooks(searchParameters);
+    public ResponseEntity<List<BookDto>> searchBooks(BookSearchParametersDto searchParameters) {
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .body(bookService.searchBooks(searchParameters));
     }
 }
