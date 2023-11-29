@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.store.structure.dto.user.UserLoginRequestDto;
 import org.store.structure.dto.user.UserLoginResponseDto;
@@ -30,7 +31,7 @@ public class AuthenticationController {
 
     @Operation(summary = "login user", description = "login existing user")
     @PostMapping("/login")
-    public UserLoginResponseDto login(@RequestBody UserLoginRequestDto request) {
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto request) {
         log.info("login method started");
         return authenticationService.authenticate(request);
     }
@@ -43,17 +44,10 @@ public class AuthenticationController {
         return userService.register(request);
     }
 
-    @Operation(summary = "setting admin role to user", description = "setting admin role")
+    @Operation(summary = "setting role to user", description = "setting role")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/set/admin/{id}")
-    public String setAdminRole(@PathVariable Long id) {
-        return userService.setAdminRole(id);
-    }
-
-    @Operation(summary = "setting user role to user", description = "setting user role")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/set/user/{id}")
-    public String setUserRole(@PathVariable Long id) {
-        return userService.setUserRole(id);
+    @PostMapping("/set/role/{userId}")
+    public String setRoleToUser(@PathVariable Long userId, @RequestParam String roleName) {
+        return userService.setRoleToUser(userId, roleName);
     }
 }

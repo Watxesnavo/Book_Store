@@ -38,7 +38,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDtoWithoutCategoryIds findById(Long id) {
         return bookMapper.toDtoWithoutCategories(bookRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Cant find book by id: " + id)));
+                () -> new EntityNotFoundException("Can't find book by id: " + id)));
     }
 
     @Override
@@ -52,19 +52,18 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto updateBook(Long bookId, CreateBookRequestDto newBook) {
-        if (bookRepository.findById(bookId).isPresent()) {
-            Book book = bookRepository.findById(bookId).get();
-            book.setTitle(newBook.getTitle());
-            book.setDescription(newBook.getDescription());
-            book.setAuthor(newBook.getAuthor());
-            book.setCoverImage(newBook.getCoverImage());
-            book.setIsbn(newBook.getIsbn());
-            book.setPrice(newBook.getPrice());
-            book.setCategories(getCategoriesByIds(newBook.getCategoryIds()));
-            return bookMapper.toDto(book);
-        } else {
-            throw new EntityNotFoundException("book was not found with this id: " + bookId);
-        }
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Can't find book by id: " + bookId)
+                );
+        book.setTitle(newBook.getTitle());
+        book.setDescription(newBook.getDescription());
+        book.setAuthor(newBook.getAuthor());
+        book.setCoverImage(newBook.getCoverImage());
+        book.setIsbn(newBook.getIsbn());
+        book.setPrice(newBook.getPrice());
+        book.setCategories(getCategoriesByIds(newBook.getCategoryIds()));
+        return bookMapper.toDto(book);
     }
 
     @Override
@@ -91,6 +90,6 @@ public class BookServiceImpl implements BookService {
         if (!categories.isEmpty()) {
             return new HashSet<>(categories);
         }
-        throw new RuntimeException("Can't get categories by this ids " + ids);
+        throw new EntityNotFoundException("Can't get categories by this ids " + ids);
     }
 }

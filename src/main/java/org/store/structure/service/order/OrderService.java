@@ -17,5 +17,5 @@ public interface OrderService {
 
     Set<OrderItemResponseDto> getItemsForOrder(Long orderId);
 
-    OrderItemResponseDto getSpecificItemFromOrder(Long orderId, Long itemId);
+    OrderItemResponseDto getSpecificItemFromSpecificOrder(Long orderId, Long itemId);
 }
