@@ -2,6 +2,7 @@ package org.store.structure.service.category;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.category.CategoryRequestDto;
@@ -18,8 +19,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryResponseDto> findAll() {
-        return categoryRepository.findAll().stream()
+    public List<CategoryResponseDto> findAll(Pageable pageable) {
+        return categoryRepository.findAll(pageable).stream()
                 .map(categoryMapper::toDto)
                 .toList();
     }
@@ -42,9 +43,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponseDto update(Long id, CategoryRequestDto categoryDto) {
-        Category category = categoryRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find category by this id: " + id)
+    public CategoryResponseDto update(Long categoryId, CategoryRequestDto categoryDto) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new EntityNotFoundException("Can't find category by this categoryId: " + categoryId)
         );
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());

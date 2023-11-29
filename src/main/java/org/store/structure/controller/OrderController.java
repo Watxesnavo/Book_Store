@@ -66,6 +66,6 @@ public class OrderController {
                                                          @PathVariable Long itemId) {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
-                .body(orderService.getSpecificItemFromOrder(orderId, itemId));
+                .body(orderService.getSpecificItemFromSpecificOrder(orderId, itemId));
     }
 }

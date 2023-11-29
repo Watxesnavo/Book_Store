@@ -11,11 +11,9 @@ public interface ShoppingCartService {
 
     ShoppingCartResponseDto addBook(CartItemRequestDto requestDto, UserDetails user);
 
-    ShoppingCartResponseDto updateItem(Long itemId, CartItemUpdateDto dto, UserDetails user);
+    ShoppingCartResponseDto updateItemQuantity(Long itemId, CartItemUpdateDto dto, UserDetails user);
 
     ShoppingCartResponseDto deleteItem(Long itemId, UserDetails user);
-
-    ShoppingCart findFirstByEmail(String email);
 
     void deleteById(Long id);
 }

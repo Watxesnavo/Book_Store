@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,8 +45,8 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Show all the categories", description = "Show all the categories from DB")
-    public ResponseEntity<List<CategoryResponseDto>> getAll() {
-        return ResponseEntity.status(HttpStatus.FOUND).body(categoryService.findAll());
+    public ResponseEntity<List<CategoryResponseDto>> getAll(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.FOUND).body(categoryService.findAll(pageable));
     }
 
     @GetMapping("/{id}")

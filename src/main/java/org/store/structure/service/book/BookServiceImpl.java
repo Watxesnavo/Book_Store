@@ -38,7 +38,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDtoWithoutCategoryIds findById(Long id) {
         return bookMapper.toDtoWithoutCategories(bookRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Cant find book by id: " + id)));
+                () -> new EntityNotFoundException("Can't find book by id: " + id)));
     }
 
     @Override
@@ -90,6 +90,6 @@ public class BookServiceImpl implements BookService {
         if (!categories.isEmpty()) {
             return new HashSet<>(categories);
         }
-        throw new RuntimeException("Can't get categories by this ids " + ids);
+        throw new EntityNotFoundException("Can't get categories by this ids " + ids);
     }
 }

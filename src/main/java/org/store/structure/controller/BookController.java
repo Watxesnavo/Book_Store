@@ -41,14 +41,13 @@ public class BookController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Create a new book", description = "Create new book")
     public ResponseEntity<BookDto> createBook(@RequestBody CreateBookRequestDto requestDto) {
-        log.info("createBook method started");
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.save(requestDto));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get book by its id", description = "get a book by id")
     public ResponseEntity<BookDtoWithoutCategoryIds> getBookById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.findById(id));
+        return ResponseEntity.status(HttpStatus.FOUND).body(bookService.findById(id));
     }
 
     @PutMapping("/{id}")
