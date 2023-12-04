@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,31 +33,34 @@ public class ShoppingCartController {
     @GetMapping
     @Operation(summary = "show current cart",
             description = "show the current logged user shopping cart")
-    public ShoppingCartResponseDto getCurrentShoppingCart(UserDetails user) {
-        return shoppingCartMapper.toDto(shoppingCartService.getCurrentCart(user));
+    public ResponseEntity<ShoppingCartResponseDto> getCurrentShoppingCart(UserDetails user) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(shoppingCartMapper.toDto(shoppingCartService.getCurrentCart(user)));
     }
 
     @PostMapping
     @Operation(summary = "add book to the cart", description = "add new item to the cart")
-    public ShoppingCartResponseDto addBook(
+    public ResponseEntity<ShoppingCartResponseDto> addBook(
             @RequestBody @Valid CartItemRequestDto requestDto, UserDetails user
     ) {
-        return shoppingCartService.addBook(requestDto, user);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(shoppingCartService.addBook(requestDto, user));
     }
 
     @PutMapping("/cart-items/{itemId}")
     @Operation(summary = "update item", description = "update quantity of item")
-    public ShoppingCartResponseDto updateItem(@PathVariable Long itemId,
+    public ResponseEntity<ShoppingCartResponseDto> updateItem(@PathVariable Long itemId,
                                               @RequestBody @Valid CartItemUpdateDto dto,
                                               UserDetails user) {
-        return shoppingCartService.updateItemQuantity(itemId, dto, user);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(shoppingCartService.updateItemQuantity(itemId, dto, user));
     }
 
     @DeleteMapping("/cart-items/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "delete item from cart",
             description = "soft delete item, and delete item from current cart")
-    public ShoppingCartResponseDto deleteItem(@PathVariable Long id, UserDetails user) {
-        return shoppingCartService.deleteItem(id, user);
+    public ResponseEntity<ShoppingCartResponseDto> deleteItem(@PathVariable Long id, UserDetails user) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(shoppingCartService.deleteItem(id, user));
     }
 }

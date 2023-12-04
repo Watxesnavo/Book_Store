@@ -1,0 +1,1 @@
+insert into orders (id, user_id, status, total, order_date, shipping_address) values (1, 1, "CREATED", 40.55, "2018-11-12 13:02:56.12345678", "sagunt 39");

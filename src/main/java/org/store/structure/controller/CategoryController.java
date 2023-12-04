@@ -67,7 +67,7 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Delete the category",
             description = "mark a category in BD as deleted (soft deleted)")
-    public void deleteCategory(Long id) {
+    public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
     }
 

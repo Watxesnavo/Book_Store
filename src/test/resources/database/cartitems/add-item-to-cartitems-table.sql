@@ -1,0 +1,1 @@
+insert into cart_items (shopping_cart_id, book_id, quantity) values (1, 1, 1);
