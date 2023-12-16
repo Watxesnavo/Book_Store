@@ -12,6 +12,7 @@ import org.store.structure.exception.EntityNotFoundException;
 import org.store.structure.mapper.ShoppingCartMapper;
 import org.store.structure.model.CartItem;
 import org.store.structure.model.ShoppingCart;
+import org.store.structure.model.User;
 import org.store.structure.repository.book.BookRepository;
 import org.store.structure.repository.cartitem.CartItemRepository;
 import org.store.structure.repository.shoppingcart.ShoppingCartRepository;
@@ -26,7 +27,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartMapper shoppingCartMapper;
 
     @Override
-    public ShoppingCart getCurrentCart(UserDetails user) {
+    public ShoppingCart getCurrentCart(User user) {
         return shoppingCartRepository.findFirstByUserEmail(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find a cart by email: "
                         + user.getUsername()));
@@ -35,7 +36,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     @Transactional
     public ShoppingCartResponseDto updateItemQuantity(
-            Long itemId, CartItemUpdateDto dto, UserDetails user
+            Long itemId, CartItemUpdateDto dto, User user
     ) {
         CartItem cartItem = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find item by id: "
@@ -45,20 +46,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto, UserDetails user) {
+    public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto, User user) {
         CartItem cartItem = new CartItem();
+        ShoppingCart currentCart = getCurrentCart(user);
         cartItem.setBook(bookRepository.findById(requestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: "
                         + requestDto.getBookId())));
         cartItem.setQuantity(requestDto.getQuantity());
-        cartItem.setShoppingCart(getCurrentCart(user));
+        cartItem.setShoppingCart(currentCart);
+        currentCart.getCartItems().add(cartItem);
         cartItemRepository.save(cartItem);
-        return shoppingCartMapper.toDto(getCurrentCart(user));
+        return shoppingCartMapper.toDto(currentCart);
     }
 
     @Override
     @Transactional
-    public ShoppingCartResponseDto deleteItem(Long itemId, UserDetails user) {
+    public ShoppingCartResponseDto deleteItem(Long itemId, User user) {
         cartItemRepository.deleteById(itemId);
         return shoppingCartMapper.toDto(getCurrentCart(user));
     }

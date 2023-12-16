@@ -36,7 +36,7 @@ import org.store.structure.dto.cartitem.CartItemUpdateDto;
 import org.store.structure.dto.shoppingcart.ShoppingCartResponseDto;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WithMockUser(username = "admin", authorities = {"ADMIN"})
+@WithUserDetails(value = "vs@gmail.com", userDetailsServiceBeanName = "customUserDetailsService")
 class ShoppingCartControllerTest {
     protected static MockMvc mockMVC;
 
@@ -120,7 +120,6 @@ class ShoppingCartControllerTest {
 
     @Test
     @SneakyThrows
-    @WithUserDetails(value = "vs@gmail.com", userDetailsServiceBeanName = "customUserDetailsService")
     void getCurrentShoppingCart_Success_ReturnsCartDto() {
         CartItemResponseDto itemResp = new CartItemResponseDto()
                 .setShoppingCartId(1L)
@@ -147,45 +146,7 @@ class ShoppingCartControllerTest {
 
     @Test
     @SneakyThrows
-    @WithUserDetails(value = "vs@gmail.com", userDetailsServiceBeanName = "customUserDetailsService")
     void addBook_ValidRequest_ReturnsCartDto() {
-        CartItemResponseDto itemResp = new CartItemResponseDto()
-                .setShoppingCartId(1L)
-                .setBookId(1L)
-                .setQuantity(1)
-                .setId(1L)
-                .setBookTitle("CumViatsa");
-        CartItemResponseDto itemResp2 = new CartItemResponseDto()
-                .setShoppingCartId(1L)
-                .setBookId(1L)
-                .setQuantity(2)
-                .setId(2L)
-                .setBookTitle("CumViatsa1");
-        ShoppingCartResponseDto expected = new ShoppingCartResponseDto()
-                .setId(1L)
-                .setUserId(1L)
-                .setCartItems(Set.of(itemResp, itemResp2));
-
-        CartItemRequestDto requestDto = new CartItemRequestDto()
-                .setBookId(1L)
-                .setQuantity(1);
-        MvcResult result = mockMVC.perform(post("/cart")
-                        .content(objectMapper.writeValueAsString(requestDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-        ShoppingCartResponseDto actual = objectMapper.readValue(
-                result.getResponse().getContentAsString(), ShoppingCartResponseDto.class);
-
-        assertNotNull(actual);
-        assertEquals(expected.getCartItems().size(), actual.getCartItems().size());
-        EqualsBuilder.reflectionEquals(expected, actual);
-    }
-
-    @Test
-    @SneakyThrows
-    @WithUserDetails(value = "vs@gmail.com", userDetailsServiceBeanName = "customUserDetailsService")
-    void updateItem_ValidAndDto_ReturnsCartDto() {
         CartItemResponseDto itemResp = new CartItemResponseDto()
                 .setShoppingCartId(1L)
                 .setBookId(1L)
@@ -195,13 +156,46 @@ class ShoppingCartControllerTest {
         CartItemResponseDto itemResp2 = new CartItemResponseDto()
                 .setShoppingCartId(1L)
                 .setBookId(1L)
-                .setQuantity(2)
+                .setQuantity(5)
                 .setId(2L)
                 .setBookTitle("CumViatsa1");
         ShoppingCartResponseDto expected = new ShoppingCartResponseDto()
                 .setId(1L)
                 .setUserId(1L)
                 .setCartItems(Set.of(itemResp, itemResp2));
+
+        CartItemRequestDto requestDto = new CartItemRequestDto()
+                .setBookId(1L)
+                .setQuantity(5);
+        MvcResult result = mockMVC.perform(post("/cart")
+                        .content(objectMapper.writeValueAsString(requestDto))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        ShoppingCartResponseDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(), ShoppingCartResponseDto.class);
+
+        assertNotNull(actual);
+        System.out.println(actual);
+        System.out.println("------");
+        System.out.println(expected);
+        assertEquals(expected.getCartItems().size(), actual.getCartItems().size());
+        EqualsBuilder.reflectionEquals(expected, actual);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateItem_ValidAndDto_ReturnsCartDto() {
+        CartItemResponseDto itemResp = new CartItemResponseDto()
+                .setShoppingCartId(1L)
+                .setBookId(1L)
+                .setQuantity(3)
+                .setId(1L)
+                .setBookTitle("CumViatsa");
+        ShoppingCartResponseDto expected = new ShoppingCartResponseDto()
+                .setId(1L)
+                .setUserId(1L)
+                .setCartItems(Set.of(itemResp));
         CartItemUpdateDto req = new CartItemUpdateDto();
         req.setQuantity(3);
         MvcResult result = mockMVC.perform(put("/cart/cart-items/{itemId}", 1)
@@ -223,8 +217,13 @@ class ShoppingCartControllerTest {
             "classpath:database/cartitems/update-items.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void deleteItem_ValidId_ReturnsCartDto() {
-        mockMVC.perform(delete("/cart/cart-items/{id}", 1)
+        MvcResult result = mockMVC.perform(delete("/cart/cart-items/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isAccepted())
+                .andReturn();
+        ShoppingCartResponseDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                ShoppingCartResponseDto.class);
+        System.out.println(actual);
     }
 }

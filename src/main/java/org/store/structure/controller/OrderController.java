@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +21,7 @@ import org.store.structure.dto.order.OrderRequestDto;
 import org.store.structure.dto.order.OrderResponseDto;
 import org.store.structure.dto.order.OrderStatusUpdateDto;
 import org.store.structure.dto.orderitem.OrderItemResponseDto;
+import org.store.structure.model.User;
 import org.store.structure.service.order.OrderService;
 
 @Tag(name = "Order management", description = "Endpoints to manage orders")
@@ -35,7 +35,7 @@ public class OrderController {
     @Operation(summary = "place order", description = "create a new order in db")
     public ResponseEntity<OrderResponseDto> placeNewOrder(
             @RequestBody @Valid OrderRequestDto requestDto,
-            @AuthenticationPrincipal UserDetails user
+            @AuthenticationPrincipal User user
     ) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -45,7 +45,7 @@ public class OrderController {
     @GetMapping
     @Operation(summary = "get all user orders",
             description = "show all the orders that created a user")
-    public ResponseEntity<List<OrderResponseDto>> getOrderHistory(UserDetails user) {
+    public ResponseEntity<List<OrderResponseDto>> getOrderHistory(@AuthenticationPrincipal User user) {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderHistory(user));
     }
 
