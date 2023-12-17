@@ -1,5 +1,14 @@
 package org.store.structure.service.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,15 +30,6 @@ import org.store.structure.model.User;
 import org.store.structure.repository.role.RoleRepository;
 import org.store.structure.repository.shoppingcart.ShoppingCartRepository;
 import org.store.structure.repository.user.UserRepository;
-
-import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -55,13 +55,14 @@ class UserServiceImplTest {
     @Test
     void register_WithValidRequestDto_ReturnsResponseDto() {
         UserRegistrationRequestDto userRegistrationRequestDto = initRegistrationDto();
-        UserResponseDto expected = initResponseDto();
-        Role role = initRole();
-        ShoppingCart shoppingCart = initShoppingCart();
+        final UserResponseDto expected = initResponseDto();
+        final Role role = initRole();
+        final ShoppingCart shoppingCart = initShoppingCart();
         user.setId(null);
         user.setPassword(null);
 
-        when(userRepository.findByEmail(userRegistrationRequestDto.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(userRegistrationRequestDto.getEmail()))
+                .thenReturn(Optional.empty());
         when(roleRepository.findByRoleName(any())).thenReturn(role);
         when(shoppingCartRepository.save(any())).thenReturn(shoppingCart);
         when(userRepository.save(any())).thenReturn(user);
@@ -79,7 +80,8 @@ class UserServiceImplTest {
         user.setId(null);
         user.setPassword(null);
 
-        when(userRepository.findByEmail(userRegistrationRequestDto.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(userRegistrationRequestDto.getEmail()))
+                .thenReturn(Optional.of(user));
 
         RegistrationException exception = assertThrows(
                 RegistrationException.class,
@@ -98,7 +100,8 @@ class UserServiceImplTest {
         userRole.setRoleName(Role.RoleName.valueOf(userRoleName));
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(roleRepository.findByRoleName(Role.RoleName.valueOf(userRoleName))).thenReturn(userRole);
+        when(roleRepository.findByRoleName(Role.RoleName.valueOf(userRoleName)))
+                .thenReturn(userRole);
 
         String actualUser = userService.setRoleToUser(user.getId(), userRoleName);
 
@@ -110,7 +113,8 @@ class UserServiceImplTest {
         adminRole.setRoleName(Role.RoleName.valueOf(adminRoleName));
 
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(roleRepository.findByRoleName(Role.RoleName.valueOf(adminRoleName))).thenReturn(adminRole);
+        when(roleRepository.findByRoleName(Role.RoleName.valueOf(adminRoleName)))
+                .thenReturn(adminRole);
 
         String actualAdmin = userService.setRoleToUser(user.getId(), adminRoleName);
 

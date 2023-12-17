@@ -39,7 +39,6 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> createCategory(
             @RequestBody @Valid CategoryRequestDto categoryDto
     ) {
-        log.info("create Category method started");
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(categoryDto));
     }
 

@@ -1,5 +1,14 @@
 package org.store.structure.service.shoppingcart;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,15 +31,6 @@ import org.store.structure.repository.book.BookRepository;
 import org.store.structure.repository.cartitem.CartItemRepository;
 import org.store.structure.repository.shoppingcart.ShoppingCartRepository;
 
-import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartServiceImplTest {
     private ShoppingCart shoppingCart;
@@ -52,13 +52,15 @@ class ShoppingCartServiceImplTest {
         shoppingCart = new ShoppingCart();
         shoppingCart.setId(1L);
         shoppingCart.setUser(user);
-        shoppingCart.setCartItems(Set.of(initCartItem()));
+        Set<CartItem> cartItems = new HashSet<>();
+        cartItems.add(initCartItem());
+        shoppingCart.setCartItems(cartItems);
     }
-
 
     @Test
     void getCurrentCart_WithValidUser_ReturnsShoppingCartEntity() {
-        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail())).thenReturn(Optional.of(shoppingCart));
+        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail()))
+                .thenReturn(Optional.of(shoppingCart));
 
         ShoppingCart actual = shoppingCartService.getCurrentCart(user);
 
@@ -68,7 +70,8 @@ class ShoppingCartServiceImplTest {
 
     @Test
     void getCurrentCart_WithInvalidUser_ThrowsException() {
-        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail())).thenReturn(Optional.empty());
+        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail()))
+                .thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
@@ -86,10 +89,12 @@ class ShoppingCartServiceImplTest {
         ShoppingCartResponseDto expected = initShoppingCartResponseDto();
 
         when(cartItemRepository.findById(cartItem.getId())).thenReturn(Optional.of(cartItem));
-        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail())).thenReturn(Optional.of(shoppingCart));
+        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail()))
+                .thenReturn(Optional.of(shoppingCart));
         when(shoppingCartMapper.toDto(shoppingCart)).thenReturn(expected);
 
-        ShoppingCartResponseDto actual = shoppingCartService.updateItemQuantity(cartItem.getId(), updateDto, user);
+        ShoppingCartResponseDto actual = shoppingCartService.updateItemQuantity(
+                cartItem.getId(), updateDto, user);
 
         assertEquals(expected, actual);
         verifyNoMoreInteractions(shoppingCartRepository, shoppingCartMapper, cartItemRepository);
@@ -116,25 +121,26 @@ class ShoppingCartServiceImplTest {
     @Test
     void addBook_WithValidRequestDto_ReturnsResponseDto() {
         CartItemRequestDto requestDto = initCartItemRequestDto();
-        CartItem cartItem = initCartItem();
         Book book = initBook();
         ShoppingCartResponseDto expected = initShoppingCartResponseDto();
 
         when(bookRepository.findById(requestDto.getBookId())).thenReturn(Optional.of(book));
-        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail())).thenReturn(Optional.of(shoppingCart));
-        when(cartItemRepository.save(any())).thenReturn(cartItem);
+        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail()))
+                .thenReturn(Optional.of(shoppingCart));
         when(shoppingCartMapper.toDto(shoppingCart)).thenReturn(expected);
 
         ShoppingCartResponseDto actual = shoppingCartService.addBook(requestDto, user);
         assertEquals(expected, actual);
-        verifyNoMoreInteractions(cartItemRepository, shoppingCartRepository, shoppingCartMapper);
+        verifyNoMoreInteractions(shoppingCartRepository, shoppingCartMapper);
     }
 
     @Test
     void addBook_WithInvalidBookId_ThrowsException() {
         CartItemRequestDto requestDto = initCartItemRequestDto();
-        requestDto.setBookId(5L);
+        requestDto.setBookId(3L);
 
+        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail()))
+                .thenReturn(Optional.of(shoppingCart));
         when(bookRepository.findById(requestDto.getBookId())).thenReturn(Optional.empty());
 
         EntityNotFoundException exception = assertThrows(
@@ -144,7 +150,7 @@ class ShoppingCartServiceImplTest {
 
         String expected = "Can't find book by id: " + requestDto.getBookId();
         assertEquals(expected, exception.getMessage());
-        verifyNoMoreInteractions(cartItemRepository, shoppingCartRepository);
+        verifyNoMoreInteractions(shoppingCartRepository);
     }
 
     private CartItemRequestDto initCartItemRequestDto() {
@@ -162,15 +168,19 @@ class ShoppingCartServiceImplTest {
         user.setPassword("12345678");
         user.setFirstName("Vyacheslav");
         user.setLastName("Sukhov");
-        user.setRoles(Set.of(new Role(Role.RoleName.ADMIN)));
+        Set<Role> roles = new HashSet<>();
+        roles.add(new Role(Role.RoleName.ADMIN));
+        user.setRoles(roles);
         user.setShippingAddress("unknown");
         return user;
     }
 
     private CartItem initCartItem() {
         CartItem cartItem = new CartItem();
+        Set<Category> categories = new HashSet<>();
+        categories.add(initCategory());
         Book book = initBook();
-        book.setCategories(Set.of(initCategory()));
+        book.setCategories(categories);
         cartItem.setId(1L);
         cartItem.setBook(book);
         cartItem.setQuantity(1);
@@ -191,7 +201,7 @@ class ShoppingCartServiceImplTest {
         book.setAuthor("Vyacheslav");
         book.setDescription("stories of vyacheslav");
         book.setTitle("My Story");
-        book.setPrice(BigDecimal.valueOf(9.99));
+        book.setPrice(BigDecimal.TEN);
         book.setIsbn("12345");
         book.setCoverImage("Test.jpg");
         return book;
@@ -215,9 +225,11 @@ class ShoppingCartServiceImplTest {
 
     private ShoppingCartResponseDto initShoppingCartResponseDto() {
         ShoppingCartResponseDto responseDto = new ShoppingCartResponseDto();
+        Set<CartItemResponseDto> cartItems = new HashSet<>();
+        cartItems.add(initCartItemResponseDto());
         responseDto.setId(shoppingCart.getId());
         responseDto.setUserId(user.getId());
-        responseDto.setCartItems(Set.of(initCartItemResponseDto()));
+        responseDto.setCartItems(cartItems);
         return responseDto;
     }
 }

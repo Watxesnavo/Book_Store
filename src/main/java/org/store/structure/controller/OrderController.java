@@ -45,7 +45,9 @@ public class OrderController {
     @GetMapping
     @Operation(summary = "get all user orders",
             description = "show all the orders that created a user")
-    public ResponseEntity<List<OrderResponseDto>> getOrderHistory(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<OrderResponseDto>> getOrderHistory(
+            @AuthenticationPrincipal User user
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderHistory(user));
     }
 

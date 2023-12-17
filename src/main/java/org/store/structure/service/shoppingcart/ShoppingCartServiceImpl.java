@@ -1,8 +1,8 @@
 package org.store.structure.service.shoppingcart;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.cartitem.CartItemRequestDto;
@@ -46,16 +46,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartResponseDto addBook(CartItemRequestDto requestDto, User user) {
-        CartItem cartItem = new CartItem();
         ShoppingCart currentCart = getCurrentCart(user);
+        Optional<CartItem> currItemOptional =
+                cartItemRepository.findByBookId(requestDto.getBookId());
+        if (currItemOptional.isPresent()) {
+            currItemOptional.get().setQuantity(requestDto.getQuantity());
+            return shoppingCartMapper.toDto(currentCart);
+        }
+        CartItem cartItem = new CartItem();
         cartItem.setBook(bookRepository.findById(requestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: "
                         + requestDto.getBookId())));
         cartItem.setQuantity(requestDto.getQuantity());
         cartItem.setShoppingCart(currentCart);
         currentCart.getCartItems().add(cartItem);
-        cartItemRepository.save(cartItem);
         return shoppingCartMapper.toDto(currentCart);
     }
 

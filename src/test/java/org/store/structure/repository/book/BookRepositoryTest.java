@@ -1,6 +1,6 @@
 package org.store.structure.repository.book;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,8 @@ class BookRepositoryTest {
     @Sql(scripts = {
             "classpath:database/categories/add-category-to-categories-table.sql",
             "classpath:database/books/add-book-to-books-table.sql",
-            "classpath:database/bookscategories/add-category-to-book-into-categories_books-table.sql"
+            "classpath:database/bookscategories/add-category-to-"
+                    + "book-into-categories_books-table.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
             "classpath:database/bookscategories/delete-categories-from-books.sql",

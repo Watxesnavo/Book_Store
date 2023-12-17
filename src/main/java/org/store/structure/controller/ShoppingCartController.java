@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +33,9 @@ public class ShoppingCartController {
     @GetMapping
     @Operation(summary = "show current cart",
             description = "show the current logged user shopping cart")
-    public ResponseEntity<ShoppingCartResponseDto> getCurrentShoppingCart(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ShoppingCartResponseDto> getCurrentShoppingCart(
+            @AuthenticationPrincipal User user
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(shoppingCartMapper.toDto(shoppingCartService.getCurrentCart(user)));
     }
@@ -57,11 +58,12 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping("/cart-items/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "delete item from cart",
             description = "soft delete item, and delete item from current cart")
     public ResponseEntity<ShoppingCartResponseDto> deleteItem(@PathVariable Long id,
                                                               @AuthenticationPrincipal User user) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(shoppingCartService.deleteItem(id, user));
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(shoppingCartService.deleteItem(id, user));
     }
 }

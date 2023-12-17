@@ -1,15 +1,15 @@
 package org.store.structure.repository.shoppingcart;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.store.structure.model.ShoppingCart;
-
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -27,7 +27,8 @@ class ShoppingCartRepositoryTest {
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Test
     void findFirstByUserEmail_WithValidEmail_ReturnsCartOptional() {
-        Optional<ShoppingCart> optionalShoppingCart = shoppingCartRepository.findFirstByUserEmail("vs@gmail.com");
+        Optional<ShoppingCart> optionalShoppingCart =
+                shoppingCartRepository.findFirstByUserEmail("vs@gmail.com");
         assertEquals(1, optionalShoppingCart.get().getId());
         assertNotNull(optionalShoppingCart);
     }

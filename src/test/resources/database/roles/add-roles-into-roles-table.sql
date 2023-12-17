@@ -1,2 +1,2 @@
-insert into roles (role_name) values ("USER");
-insert into roles (role_name) values ("ADMIN");
+insert into roles (id, role_name) values (1, "USER");
+insert into roles (id, role_name) values (2, "ADMIN");

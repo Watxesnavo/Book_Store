@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Set;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.AfterAll;
@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -66,7 +65,8 @@ class ShoppingCartControllerTest {
             );
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/categories/add-category-to-categories-table.sql")
+                    new ClassPathResource(
+                            "database/categories/add-category-to-categories-table.sql")
             );
             ScriptUtils.executeSqlScript(
                     connection,
@@ -74,7 +74,8 @@ class ShoppingCartControllerTest {
             );
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/shoppingcarts/add-cart-to-shopping_carts-table.sql")
+                    new ClassPathResource(
+                            "database/shoppingcarts/add-cart-to-shopping_carts-table.sql")
             );
             ScriptUtils.executeSqlScript(
                     connection,
@@ -96,7 +97,8 @@ class ShoppingCartControllerTest {
             connection.setAutoCommit(true);
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/bookscategories/delete-categories-from-books.sql"));
+                    new ClassPathResource(
+                            "database/bookscategories/delete-categories-from-books.sql"));
             ScriptUtils.executeSqlScript(
                     connection,
                     new ClassPathResource("database/categories/delete-category.sql"));
@@ -105,7 +107,8 @@ class ShoppingCartControllerTest {
                     new ClassPathResource("database/books/delete-book.sql"));
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/cartitems/delete-items-from-cart_items-table.sql"));
+                    new ClassPathResource(
+                            "database/cartitems/delete-items-from-cart_items-table.sql"));
             ScriptUtils.executeSqlScript(
                     connection,
                     new ClassPathResource("database/shoppingcarts/delete-cart.sql"));
@@ -155,18 +158,18 @@ class ShoppingCartControllerTest {
                 .setBookTitle("CumViatsa");
         CartItemResponseDto itemResp2 = new CartItemResponseDto()
                 .setShoppingCartId(1L)
-                .setBookId(1L)
-                .setQuantity(5)
+                .setBookId(2L)
+                .setQuantity(1)
                 .setId(2L)
                 .setBookTitle("CumViatsa1");
-        ShoppingCartResponseDto expected = new ShoppingCartResponseDto()
+        final ShoppingCartResponseDto expected = new ShoppingCartResponseDto()
                 .setId(1L)
                 .setUserId(1L)
                 .setCartItems(Set.of(itemResp, itemResp2));
 
         CartItemRequestDto requestDto = new CartItemRequestDto()
-                .setBookId(1L)
-                .setQuantity(5);
+                .setBookId(2L)
+                .setQuantity(1);
         MvcResult result = mockMVC.perform(post("/cart")
                         .content(objectMapper.writeValueAsString(requestDto))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -217,13 +220,8 @@ class ShoppingCartControllerTest {
             "classpath:database/cartitems/update-items.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void deleteItem_ValidId_ReturnsCartDto() {
-        MvcResult result = mockMVC.perform(delete("/cart/cart-items/{id}", 1)
+        mockMVC.perform(delete("/cart/cart-items/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted())
-                .andReturn();
-        ShoppingCartResponseDto actual = objectMapper.readValue(
-                result.getResponse().getContentAsString(),
-                ShoppingCartResponseDto.class);
-        System.out.println(actual);
+                .andExpect(status().isAccepted());
     }
 }

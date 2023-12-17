@@ -1,7 +1,21 @@
 package org.store.structure.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Set;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.AfterAll;
@@ -12,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,22 +37,8 @@ import org.store.structure.dto.book.CreateBookRequestDto;
 import org.store.structure.dto.category.CategoryRequestDto;
 import org.store.structure.dto.category.CategoryResponseDto;
 
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WithMockUser(username = "admin", authorities = {"ADMIN"})
+@WithUserDetails(value = "vs@gmail.com", userDetailsServiceBeanName = "customUserDetailsService")
 class CategoryControllerTest {
     protected static MockMvc mockMVC;
 
@@ -60,7 +60,20 @@ class CategoryControllerTest {
             connection.setAutoCommit(true);
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/categories/add-category-to-categories-table.sql")
+                    new ClassPathResource("database/roles/add-roles-into-roles-table.sql")
+            );
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database/users/add-user-into-users-table.sql")
+            );
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database/users/set-user-as-admin.sql")
+            );
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource(
+                            "database/categories/add-category-to-categories-table.sql")
             );
             ScriptUtils.executeSqlScript(
                     connection,
@@ -68,7 +81,8 @@ class CategoryControllerTest {
             );
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/bookscategories/add-category-to-book-into-categories_books-table.sql")
+                    new ClassPathResource("database/bookscategories/add-category-to-"
+                            + "book-into-categories_books-table.sql")
             );
         }
     }
@@ -86,13 +100,23 @@ class CategoryControllerTest {
             connection.setAutoCommit(true);
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/bookscategories/delete-categories-from-books.sql"));
+                    new ClassPathResource(
+                            "database/bookscategories/delete-categories-from-books.sql"));
             ScriptUtils.executeSqlScript(
                     connection,
                     new ClassPathResource("database/categories/delete-category.sql"));
             ScriptUtils.executeSqlScript(
                     connection,
                     new ClassPathResource("database/books/delete-book.sql"));
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database/users/delete-admin-user.sql"));
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database/users/delete-user.sql"));
+            ScriptUtils.executeSqlScript(
+                    connection,
+                    new ClassPathResource("database/roles/delete-roles.sql"));
         }
     }
 
@@ -138,7 +162,7 @@ class CategoryControllerTest {
         List<CategoryResponseDto> actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 new TypeReference<>() {
-        });
+                });
 
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
@@ -191,7 +215,8 @@ class CategoryControllerTest {
     @SneakyThrows
     @Test
     void deleteCategory_ValidId_Success() {
-        mockMVC.perform(delete("/categories/{id}", 1)).andExpect(status().isOk());
+        mockMVC.perform(delete("/categories/{id}", 1))
+                .andExpect(status().isOk());
     }
 
     @SneakyThrows
@@ -222,7 +247,7 @@ class CategoryControllerTest {
         List<BookDtoWithoutCategoryIds> actual = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 new TypeReference<>() {
-        });
+                });
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
         assertEquals(expected.get(0), actual.get(0));

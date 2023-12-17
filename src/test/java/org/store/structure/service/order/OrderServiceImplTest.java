@@ -1,6 +1,7 @@
 package org.store.structure.service.order;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -69,18 +70,20 @@ class OrderServiceImplTest {
     @Test
     void placeOrder_WithValidRequestDto_ReturnsResponseDto() {
         OrderItem orderItem = initOrderItem();
-        Book book = initBook();
-        ShoppingCart shoppingCart = initShoppingCart();
-        OrderResponseDto expected = initOrderResponseDto(order);
-        OrderRequestDto requestDto = initOrderRequestDto(order);
+        final Book book = initBook();
+        final ShoppingCart shoppingCart = initShoppingCart();
+        final OrderResponseDto expected = initOrderResponseDto(order);
+        final OrderRequestDto requestDto = initOrderRequestDto(order);
         order.setId(null);
         orderItem.setOrder(order);
         orderItem.setId(null);
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(orderItemRepository.findAllByOrderUserEmail(user.getUsername())).thenReturn(Set.of(orderItem));
+        when(orderItemRepository.findAllByOrderUserEmail(user.getUsername()))
+                .thenReturn(Set.of(orderItem));
         when(orderItemRepository.findAll()).thenReturn(List.of(orderItem));
-        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail())).thenReturn(Optional.of(shoppingCart));
+        when(shoppingCartRepository.findFirstByUserEmail(user.getEmail()))
+                .thenReturn(Optional.of(shoppingCart));
         when(bookRepository.findById(anyLong())).thenReturn(Optional.of(book));
         when(orderMapper.toDto(order)).thenReturn(expected);
         when(orderRepository.save(any())).thenReturn(order);
@@ -199,7 +202,8 @@ class OrderServiceImplTest {
                 .thenReturn(Optional.of(orderItem));
         when(orderItemMapper.toDto(orderItem)).thenReturn(responseDto);
 
-        OrderItemResponseDto actual = orderService.getSpecificItemFromSpecificOrder(order.getId(), orderItem.getId());
+        OrderItemResponseDto actual = orderService.getSpecificItemFromSpecificOrder(
+                order.getId(), orderItem.getId());
 
         assertEquals(responseDto, actual);
         verifyNoMoreInteractions(orderItemRepository, orderItemMapper);
@@ -214,9 +218,11 @@ class OrderServiceImplTest {
 
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
-                () -> orderService.getSpecificItemFromSpecificOrder(order.getId(), orderItem.getId()));
+                () -> orderService.getSpecificItemFromSpecificOrder(
+                        order.getId(), orderItem.getId()));
 
-        String expected = "Can't find item by id: " + orderItem.getId() + " or order id: " + order.getId();
+        String expected = "Can't find item by id: "
+                + orderItem.getId() + " or order id: " + order.getId();
         assertEquals(expected, exception.getMessage());
         verifyNoMoreInteractions(orderItemRepository);
     }

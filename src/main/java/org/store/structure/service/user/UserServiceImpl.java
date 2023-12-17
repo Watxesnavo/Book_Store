@@ -48,7 +48,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public String setRoleToUser(Long userId, String roleName) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by userId: " + userId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Can't find user by userId: " + userId)
+                );
         user.setRoles(Set.of(roleRepository.findByRoleName(Role.RoleName.valueOf(roleName))));
         return "User by id: " + userId + " has role: " + roleName;
     }

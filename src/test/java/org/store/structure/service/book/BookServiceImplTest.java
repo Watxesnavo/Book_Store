@@ -1,6 +1,7 @@
 package org.store.structure.service.book;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -44,7 +45,7 @@ class BookServiceImplTest {
     @Mock
     private BookMapper bookMapper;
     @Mock
-    BookSpecificationBuilder bookSpecificationBuilder;
+    private BookSpecificationBuilder bookSpecificationBuilder;
     @InjectMocks
     private BookServiceImpl bookService;
     private Book book;
@@ -178,7 +179,7 @@ class BookServiceImplTest {
     @DisplayName("Check correct response of search method by author parameter")
     void searchBooks_WithValidAuthorSearchParameter_ReturnsLisOfBookDto() {
         BookDto bookDto = initBookDto(book);
-        List<BookDto> expected = List.of(bookDto);
+        final List<BookDto> expected = List.of(bookDto);
         BookSearchParametersDto searchParametersDto = new BookSearchParametersDto(
                 new String[]{book.getAuthor()},
                 new String[]{null},
@@ -206,7 +207,7 @@ class BookServiceImplTest {
     @DisplayName("Check correct response of search method by title parameter")
     void searchBooks_WithValidTitleSearchParameter_ReturnsLisOfBookDto() {
         BookDto bookDto = initBookDto(book);
-        List<BookDto> expected = List.of(bookDto);
+        final List<BookDto> expected = List.of(bookDto);
         BookSearchParametersDto searchParametersDto = new BookSearchParametersDto(
                 new String[]{null},
                 new String[]{book.getTitle()},
@@ -234,7 +235,7 @@ class BookServiceImplTest {
     @DisplayName("Check correct response of search method by price parameter")
     void searchBooks_WithValidPriceSearchParameter_ReturnsLisOfBookDto() {
         BookDto bookDto = initBookDto(book);
-        List<BookDto> expected = List.of(bookDto);
+        final List<BookDto> expected = List.of(bookDto);
         BookSearchParametersDto searchParametersDto = new BookSearchParametersDto(
                 new String[]{null},
                 new String[]{null},
@@ -262,7 +263,7 @@ class BookServiceImplTest {
     @DisplayName("Check correct response of search method by cover image parameter")
     void searchBooks_WithValidCoverImageSearchParameter_ReturnsLisOfBookDto() {
         BookDto bookDto = initBookDto(book);
-        List<BookDto> expected = List.of(bookDto);
+        final List<BookDto> expected = List.of(bookDto);
         BookSearchParametersDto searchParametersDto = new BookSearchParametersDto(
                 new String[]{null},
                 new String[]{null},

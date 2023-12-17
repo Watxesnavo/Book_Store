@@ -45,7 +45,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponseDto update(Long categoryId, CategoryRequestDto categoryDto) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new EntityNotFoundException("Can't find category by this categoryId: " + categoryId)
+                () -> new EntityNotFoundException(
+                        "Can't find category by this categoryId: " + categoryId
+                )
         );
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());
