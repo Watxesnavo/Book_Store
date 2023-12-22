@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Set;
@@ -145,6 +147,34 @@ class CategoryControllerTest {
 
     @SneakyThrows
     @Test
+    void createCategory_failedNameValidation_test() {
+        mockMVC.perform(post("/categories")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/category/invalid-name.json")
+                                                .toPath())))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
+    void createCategory_failedDescriptionValidation_test() {
+        mockMVC.perform(post("/categories")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/category/invalid-name.json")
+                                                .toPath())))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
     void getAll_Success_ReturnDtoList() {
         CategoryResponseDto cat1 = new CategoryResponseDto()
                 .setDescription("testing")
@@ -210,6 +240,34 @@ class CategoryControllerTest {
         );
         assertNotNull(actual);
         EqualsBuilder.reflectionEquals(expected, actual);
+    }
+
+    @SneakyThrows
+    @Test
+    void updateCategory_failedDescriptionValidation_test() {
+        mockMVC.perform(put("/categories/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/category/invalid-name.json")
+                                                .toPath())))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @SneakyThrows
+    @Test
+    void updateCategory_failedNameValidation_test() {
+        mockMVC.perform(put("/categories/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/category/invalid-name.json")
+                                                .toPath())))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @SneakyThrows

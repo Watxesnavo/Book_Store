@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Set;
@@ -156,6 +158,81 @@ class BookControllerTest {
 
     @Test
     @SneakyThrows
+    void createBook_failedTitleValidation_test() {
+        mockMVC.perform(post("/books")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/invalid-title.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void createBook_failedAuthorValidation_test() {
+        mockMVC.perform(post("/books")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/empty-author.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void createBook_failedCategoriesValidation_test() {
+        mockMVC.perform(post("/books")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/empty-categories.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void createBook_failedIsbnValidation_test() {
+        mockMVC.perform(post("/books")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/empty-isbn.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void createBook_failedPriceValidation_test() {
+        mockMVC.perform(post("/books")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/null-price.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
     void findAll_Success_ReturnsDtoList() {
         BookDto dto1 = new BookDto()
                 .setTitle("CumViatsa")
@@ -175,7 +252,6 @@ class BookControllerTest {
                 .setCategoryIds(Set.of(1L))
                 .setIsbn("124")
                 .setId(2L);
-
 
         MvcResult result = mockMVC.perform(get("/books")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -230,7 +306,7 @@ class BookControllerTest {
     @Sql(scripts = {
             "classpath:database/books/restore-book.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void updateBook_ValidId_ReturnsDto() {
+    void updateBook_ValidIdAndRequestDto_ReturnsDto() {
         CreateBookRequestDto requestDto = new CreateBookRequestDto()
                 .setTitle("CumViatsaA")
                 .setIsbn("123")
@@ -260,6 +336,78 @@ class BookControllerTest {
                 result.getResponse().getContentAsString(), BookDto.class);
         assertNotNull(actual);
         EqualsBuilder.reflectionEquals(expected, actual);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBook_failedIsbnValidation_test() {
+        mockMVC.perform(put("/books/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request/book/empty-isbn.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBook_failedTitleValidation_test() {
+        mockMVC.perform(put("/books/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/invalid-title.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBook_failedAuthorValidation_test() {
+        mockMVC.perform(put("/books/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request/book/empty-author.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBook_failedCategoriesValidation_test() {
+        mockMVC.perform(put("/books/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/book/empty-categories.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    void updateBook_failedPriceValidation_test() {
+        mockMVC.perform(put("/books/{id}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request/book/null-price.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

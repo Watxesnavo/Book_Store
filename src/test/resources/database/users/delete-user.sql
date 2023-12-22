@@ -1,3 +1,3 @@
 SET FOREIGN_KEY_CHECKS = 0;
-delete from users where id = 1;
+truncate table users;
 SET FOREIGN_KEY_CHECKS = 1;

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.store.structure.dto.order.OrderRequestDto;
@@ -41,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponseDto placeOrder(OrderRequestDto requestDto, UserDetails user) {
+    public OrderResponseDto placeOrder(OrderRequestDto requestDto, User user) {
         Order order = saveDefaultOrder(user);
         saveAllItems(order, user);
         order.setShippingAddress(requestDto.getShippingAddress());
@@ -51,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDto> getOrderHistory(UserDetails user) {
+    public List<OrderResponseDto> getOrderHistory(User user) {
         List<Order> orders = orderRepository.findAllByUserEmail(
                 user.getUsername()
         );
@@ -82,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-    private BigDecimal getItemsTotal(UserDetails user) {
+    private BigDecimal getItemsTotal(User user) {
         Set<OrderItem> orderItems = orderItemRepository.findAllByOrderUserEmail(user.getUsername());
         List<BigDecimal> prices = orderItems.stream()
                 .map(OrderItem::getPrice)
@@ -90,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
         return prices.stream().reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 
-    private void saveAllItems(Order order, UserDetails user) {
+    private void saveAllItems(Order order, User user) {
         ShoppingCart currentCart = shoppingCartRepository.findFirstByUserEmail(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find a cart by email: "
                         + user.getUsername()));
@@ -119,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
         return orderItems;
     }
 
-    private Order saveDefaultOrder(UserDetails userDetails) {
+    private Order saveDefaultOrder(User userDetails) {
         Order order = new Order();
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.Status.CREATED);
@@ -129,8 +128,8 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
-    private User getCurrentUser(UserDetails user) {
-        return userRepository.findByEmail(user.getUsername())
+    private User getCurrentUser(User userDetails) {
+        return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find a user by email"));
     }
 

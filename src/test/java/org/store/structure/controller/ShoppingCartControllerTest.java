@@ -10,6 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.util.Set;
 import javax.sql.DataSource;
@@ -188,7 +191,22 @@ class ShoppingCartControllerTest {
 
     @Test
     @SneakyThrows
-    void updateItem_ValidAndDto_ReturnsCartDto() {
+    void addBook_BookIdAndQuantityValidationFail_test() {
+        mockMVC.perform(post("/cart")
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File("src/test/resources/request/"
+                                                + "cartitem/invalid-bookId-quantity.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    @SneakyThrows
+    void updateItem_ValidIdAndDto_ReturnsCartDto() {
         CartItemResponseDto itemResp = new CartItemResponseDto()
                 .setShoppingCartId(1L)
                 .setBookId(1L)
@@ -212,6 +230,21 @@ class ShoppingCartControllerTest {
         assertNotNull(actual);
         assertEquals(expected.getCartItems().size(), actual.getCartItems().size());
         EqualsBuilder.reflectionEquals(expected, actual);
+    }
+
+    @Test
+    @SneakyThrows
+    void updateItem_QuantityValidationFail_test() {
+        mockMVC.perform(put("/cart/cart-items/{itemId}", 1)
+                        .content(new String(
+                                Files.readAllBytes(
+                                        new File(
+                                                "src/test/resources/request"
+                                                        + "/cartitem/invalid-quantity.json")
+                                                .toPath()))
+                        )
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
