@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -181,13 +181,8 @@ class OrderControllerTest {
     @SneakyThrows
     void placeNewOrder_failedShippingAddressValidation_test() {
         mockMVC.perform(post("/orders")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/order/invalid-order-shippingaddress.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/order"
+                                + "/invalid-order-shippingaddress.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -252,13 +247,8 @@ class OrderControllerTest {
     @SneakyThrows
     void updateStatus_failedStatusValidation_test() {
         mockMVC.perform(patch("/orders/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/order/invalid-status.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/order/invalid-status.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -302,5 +292,14 @@ class OrderControllerTest {
 
         assertNotNull(actual);
         EqualsBuilder.reflectionEquals(expected, actual);
+    }
+
+    private String readTestFile(String pathName) throws IOException {
+        return new String(
+                Files.readAllBytes(
+                        new File(pathName)
+                                .toPath()
+                )
+        );
     }
 }

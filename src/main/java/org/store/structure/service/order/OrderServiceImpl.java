@@ -118,18 +118,18 @@ public class OrderServiceImpl implements OrderService {
         return orderItems;
     }
 
-    private Order saveDefaultOrder(User userDetails) {
+    private Order saveDefaultOrder(User user) {
         Order order = new Order();
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.Status.CREATED);
-        order.setUser(getCurrentUser(userDetails));
-        order.setShippingAddress(getCurrentUser(userDetails).getShippingAddress());
+        order.setUser(getCurrentUser(user));
+        order.setShippingAddress(getCurrentUser(user).getShippingAddress());
         order.setTotal(BigDecimal.ZERO);
         return orderRepository.save(order);
     }
 
-    private User getCurrentUser(User userDetails) {
-        return userRepository.findByEmail(userDetails.getUsername())
+    private User getCurrentUser(User user) {
+        return userRepository.findByEmail(user.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("Can't find a user by email"));
     }
 

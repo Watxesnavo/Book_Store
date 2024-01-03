@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -149,12 +150,8 @@ class CategoryControllerTest {
     @Test
     void createCategory_failedNameValidation_test() {
         mockMVC.perform(post("/categories")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/category/invalid-name.json")
-                                                .toPath())))
+                        .content(readTestFile("src/test/resources/request"
+                                + "/category/invalid-name.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -163,12 +160,8 @@ class CategoryControllerTest {
     @Test
     void createCategory_failedDescriptionValidation_test() {
         mockMVC.perform(post("/categories")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/category/invalid-name.json")
-                                                .toPath())))
+                        .content(readTestFile("src/test/resources/request"
+                                + "/category/invalid-name.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -246,12 +239,8 @@ class CategoryControllerTest {
     @Test
     void updateCategory_failedDescriptionValidation_test() {
         mockMVC.perform(put("/categories/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/category/invalid-name.json")
-                                                .toPath())))
+                        .content(readTestFile("src/test/resources/request"
+                                + "/category/invalid-name.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -260,12 +249,8 @@ class CategoryControllerTest {
     @Test
     void updateCategory_failedNameValidation_test() {
         mockMVC.perform(put("/categories/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/category/invalid-name.json")
-                                                .toPath())))
+                        .content(readTestFile("src/test/resources/request"
+                                + "/category/invalid-name.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -309,5 +294,14 @@ class CategoryControllerTest {
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
         assertEquals(expected.get(0), actual.get(0));
+    }
+
+    private String readTestFile(String pathName) throws IOException {
+        return new String(
+                Files.readAllBytes(
+                        new File(pathName)
+                                .toPath()
+                )
+        );
     }
 }

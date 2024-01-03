@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -160,13 +161,8 @@ class BookControllerTest {
     @SneakyThrows
     void createBook_failedTitleValidation_test() {
         mockMVC.perform(post("/books")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/invalid-title.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/invalid-title.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -175,13 +171,8 @@ class BookControllerTest {
     @SneakyThrows
     void createBook_failedAuthorValidation_test() {
         mockMVC.perform(post("/books")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/empty-author.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/empty-author.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -190,13 +181,8 @@ class BookControllerTest {
     @SneakyThrows
     void createBook_failedCategoriesValidation_test() {
         mockMVC.perform(post("/books")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/empty-categories.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/empty-categories.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -205,13 +191,8 @@ class BookControllerTest {
     @SneakyThrows
     void createBook_failedIsbnValidation_test() {
         mockMVC.perform(post("/books")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/empty-isbn.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/empty-isbn.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -220,13 +201,8 @@ class BookControllerTest {
     @SneakyThrows
     void createBook_failedPriceValidation_test() {
         mockMVC.perform(post("/books")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/null-price.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/null-price.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -342,12 +318,7 @@ class BookControllerTest {
     @SneakyThrows
     void updateBook_failedIsbnValidation_test() {
         mockMVC.perform(put("/books/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request/book/empty-isbn.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/book/empty-isbn.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -356,13 +327,8 @@ class BookControllerTest {
     @SneakyThrows
     void updateBook_failedTitleValidation_test() {
         mockMVC.perform(put("/books/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/invalid-title.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/invalid-title.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -371,12 +337,7 @@ class BookControllerTest {
     @SneakyThrows
     void updateBook_failedAuthorValidation_test() {
         mockMVC.perform(put("/books/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request/book/empty-author.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/book/empty-author.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -385,13 +346,8 @@ class BookControllerTest {
     @SneakyThrows
     void updateBook_failedCategoriesValidation_test() {
         mockMVC.perform(put("/books/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request"
-                                                        + "/book/empty-categories.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request"
+                                + "/book/empty-categories.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -400,12 +356,7 @@ class BookControllerTest {
     @SneakyThrows
     void updateBook_failedPriceValidation_test() {
         mockMVC.perform(put("/books/{id}", 1)
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File(
-                                                "src/test/resources/request/book/null-price.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/book/null-price.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -459,5 +410,14 @@ class BookControllerTest {
         assertNotNull(actual);
         assertEquals(expected.size(), actual.size());
         EqualsBuilder.reflectionEquals(expected, actual);
+    }
+
+    private String readTestFile(String pathName) throws IOException {
+        return new String(
+                Files.readAllBytes(
+                        new File(pathName)
+                                .toPath()
+                )
+        );
     }
 }

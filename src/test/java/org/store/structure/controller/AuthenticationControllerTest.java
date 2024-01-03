@@ -1,6 +1,16 @@
 package org.store.structure.controller;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.Connection;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,7 +21,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,17 +30,6 @@ import org.store.structure.dto.user.UserLoginRequestDto;
 import org.store.structure.dto.user.UserLoginResponseDto;
 import org.store.structure.dto.user.UserRegistrationRequestDto;
 import org.store.structure.dto.user.UserResponseDto;
-
-import javax.sql.DataSource;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.sql.Connection;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthenticationControllerTest {
@@ -94,7 +92,9 @@ class AuthenticationControllerTest {
 
     @Test
     @SneakyThrows
-    @WithUserDetails(value = "vs@gmail.com", userDetailsServiceBeanName = "customUserDetailsService")
+    @WithUserDetails(
+            value = "vs@gmail.com",
+            userDetailsServiceBeanName = "customUserDetailsService")
     void login_ValidRequestDto_ReturnsResponseDto() {
         UserLoginRequestDto requestDto = new UserLoginRequestDto("vs@gmail.com", "12345678");
         MvcResult result = mockMVC.perform(post("/auth/login")
@@ -112,12 +112,8 @@ class AuthenticationControllerTest {
     @SneakyThrows
     void login_failedEmailValidation_test() {
         mockMVC.perform(post("/auth/login")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File("src/test/resources/request/user/"
-                                                + "user-login-request_invalid-email.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/user/"
+                                + "user-login-request_invalid-email.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -126,12 +122,8 @@ class AuthenticationControllerTest {
     @SneakyThrows
     void login_failedPasswordValidation_test() {
         mockMVC.perform(post("/auth/login")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File("src/test/resources/request/user"
-                                                + "/user-login-request_invalid-password.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/user"
+                                + "/user-login-request_invalid-password.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -162,12 +154,8 @@ class AuthenticationControllerTest {
     @SneakyThrows
     void register_failedPasswordValidation_test() {
         mockMVC.perform(post("/auth/register")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File("src/test/resources/request/user"
-                                                + "/user-register-request_empty-password.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/user"
+                                + "/user-register-request_empty-password.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -176,12 +164,8 @@ class AuthenticationControllerTest {
     @SneakyThrows
     void register_failedEmailValidation_test() {
         mockMVC.perform(post("/auth/register")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File("src/test/resources/request/user"
-                                                + "/user-register-request_invalid-email.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/user"
+                                + "/user-register-request_invalid-email.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -190,13 +174,18 @@ class AuthenticationControllerTest {
     @SneakyThrows
     void register_failedNameValidation_test() {
         mockMVC.perform(post("/auth/register")
-                        .content(new String(
-                                Files.readAllBytes(
-                                        new File("src/test/resources/request/user"
-                                                + "/user-register-request_invalid-name-sizes.json")
-                                                .toPath()))
-                        )
+                        .content(readTestFile("src/test/resources/request/user"
+                                + "/user-register-request_invalid-name-sizes.json"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    private String readTestFile(String pathName) throws IOException {
+        return new String(
+                Files.readAllBytes(
+                        new File(pathName)
+                                .toPath()
+                )
+        );
     }
 }
