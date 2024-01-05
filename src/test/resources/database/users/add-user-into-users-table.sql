@@ -1,0 +1,1 @@
+insert into users (id, email, password, first_name, last_name, shipping_address) values (1, "vs@gmail.com", "12345678", "slava", "sukhov", "sagunt 39");

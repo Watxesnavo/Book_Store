@@ -1,0 +1,1 @@
+update categories set name = "test", description = "testing", is_deleted = false where id = 1;

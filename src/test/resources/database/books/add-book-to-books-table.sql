@@ -1,0 +1,2 @@
+insert into books (id, title, author, price, cover_image, description, isbn) values (1, "CumViatsa", "Eslava", 25.99, "coverImage", "testing", "123");
+insert into books (id, title, author, price, cover_image, description, isbn) values (2, "CumViatsa1", "Eslava", 95.99, "coverImage", "testing", "124");

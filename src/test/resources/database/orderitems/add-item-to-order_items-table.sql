@@ -1,0 +1,1 @@
+insert into order_items (id, order_id, book_id, quantity, price) values (1, 1, 1, 1, 25.99);

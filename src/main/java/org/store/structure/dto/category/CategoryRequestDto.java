@@ -1,13 +1,14 @@
 package org.store.structure.dto.category;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
 public class CategoryRequestDto {
-    @NotNull
+    @NotBlank
     private String name;
+    @NotBlank
     private String description;
 }

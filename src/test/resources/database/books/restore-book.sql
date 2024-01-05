@@ -1,0 +1,1 @@
+update books set title = "CumViatsa", is_deleted = false where id = 1;

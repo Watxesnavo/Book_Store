@@ -2,6 +2,7 @@ package org.store.structure.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class BookController {
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Create a new book", description = "Create new book")
-    public ResponseEntity<BookDto> createBook(@RequestBody CreateBookRequestDto requestDto) {
+    public ResponseEntity<BookDto> createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.save(requestDto));
     }
 
@@ -54,7 +55,7 @@ public class BookController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Update a book", description = "updates a book by id")
     public ResponseEntity<BookDto> updateBook(
-            @PathVariable Long id, @RequestBody CreateBookRequestDto bookDto
+            @PathVariable Long id, @RequestBody @Valid CreateBookRequestDto bookDto
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(bookService.updateBook(id, bookDto));
     }

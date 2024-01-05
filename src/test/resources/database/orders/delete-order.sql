@@ -1,0 +1,3 @@
+SET FOREIGN_KEY_CHECKS = 0;
+truncate table orders;
+SET FOREIGN_KEY_CHECKS = 1;

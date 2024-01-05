@@ -39,7 +39,6 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> createCategory(
             @RequestBody @Valid CategoryRequestDto categoryDto
     ) {
-        log.info("create Category method started");
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(categoryDto));
     }
 
@@ -67,7 +66,7 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(summary = "Delete the category",
             description = "mark a category in BD as deleted (soft deleted)")
-    public void deleteCategory(Long id) {
+    public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
     }
 

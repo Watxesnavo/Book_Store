@@ -1,0 +1,1 @@
+update cart_items set is_deleted = false where id = 1;

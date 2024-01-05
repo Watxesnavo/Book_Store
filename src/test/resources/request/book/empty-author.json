@@ -1,0 +1,11 @@
+{
+  "title": "string",
+  "author": "",
+  "isbn": "string",
+  "price": 0,
+  "description": "string",
+  "coverImage": "string",
+  "categoryIds": [
+    1
+  ]
+}
